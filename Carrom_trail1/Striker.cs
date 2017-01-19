@@ -15,7 +15,7 @@ namespace Carrom_trail1
         int weight;
         Ellipse striker;
 
-        public Striker (int radius, int location_X, int location_Y, Color color) : base (radius, new Point (location_X, location_Y))
+        public Striker (int radius, Point origin, Color color) : base (radius, origin)
             {
             striker = new Ellipse ();
             striker.Height = striker.Width = radius;

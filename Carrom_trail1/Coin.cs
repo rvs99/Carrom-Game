@@ -16,6 +16,8 @@ namespace Carrom_trail1
         int weight;
         public Ellipse coin;
         Player player;
+        string coinNumber;
+        bool isQueen;
 
         public void AssignPlayer (Player player)
             {
@@ -23,7 +25,7 @@ namespace Carrom_trail1
             }
 
         //Constructor
-        public Coin (int radius, int location_X, int location_Y, Color color) : base (radius, new Point(location_X,location_Y))
+        public Coin (int radius, Point origin, Color color) : base (radius, origin)
             {
             coin = new Ellipse ();
             coin.Height = coin.Width = radius;

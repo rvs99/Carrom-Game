@@ -13,7 +13,7 @@ namespace Carrom_trail1
         {
         Ellipse pocket;
         
-        public Pocket (int radius, int location_X, int location_Y) : base (radius, new Point(location_X, location_Y))
+        public Pocket (int radius, Point origin) : base (radius, origin)
             {
             pocket = new Ellipse ();
             pocket.Height = pocket.Width = radius;

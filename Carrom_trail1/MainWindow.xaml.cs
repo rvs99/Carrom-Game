@@ -35,7 +35,7 @@ namespace Carrom_trail1
 
         private void Window_Loaded (object sender, RoutedEventArgs e)
             {
-                        c = new Coin (31, 50, 100, Colors.Black);
+            c = new Coin (31, new Point(50, 100), Colors.Black);
 
             canvas.Children.Add (c.coin);
             Canvas.SetLeft (c.coin, 50);

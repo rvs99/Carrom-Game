@@ -9,10 +9,34 @@ namespace Carrom_trail1
     public class PhysicsEngine
         {
 
+        List<CarromObject> listOfCoins = new List<CarromObject> (19);
+        Striker striker;
+        List<CarromObject> listOfPockets = new List<CarromObject> (4);
 
 
         public void AddObject (CarromObject obj)
             {
+            try
+                {
+                if (obj as Coin != null)
+                    {
+                    listOfCoins.Add (obj as Coin);
+                    }
+                else if (obj as Striker != null)
+                    {
+                    striker = obj as Striker;
+                    }
+                else if (obj as Pocket != null)
+                    {
+                    listOfPockets.Add( obj as Striker);
+                    }
+                }
+            catch (Exception)
+                {
+
+                throw;
+                }
+            
             }
 
         //Will be used to move a CarromObject
@@ -33,16 +57,34 @@ namespace Carrom_trail1
             //--------If no, continue
             }
 
-        public bool isCollided (CarromObject obj)
+        public enum CollisionResult
+            {
+            None,
+            Edge,
+            Coin,
+            Striker
+            }
+
+        public CollisionResult isCollided (CarromObject obj)
             {
             //Check if is collided with Edge
 
             //Check if it is collided with other Coin
 
+
             //Check if it is going inside Pocket
-            return true;
+            return CollisionResult.None;
             }
 
+        public double GetStoppingDistance (CarromObject obj, double force)
+            {
+            double coefficientOfFriction = 0.25 * 9.8;
+            double stoppingDistance = 0.0F;
+
+            stoppingDistance = (force * force) / (2 * coefficientOfFriction);
+
+            return stoppingDistance;
+            }
 
         }
     }
