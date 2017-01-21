@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Carrom_trail1.Properties
+namespace Carrom.Properties
     {
 
 

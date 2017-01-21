@@ -7,19 +7,21 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace Carrom_trail1
+namespace Carrom
     {
     class Striker : CarromObject
         {
         //assign this value from config file
         int weight;
-        Ellipse striker;
 
-        public Striker (int radius, Point origin, Color color) : base (radius, origin)
+        public Striker (int radius, Color color) : base (radius)
             {
-            striker = new Ellipse ();
-            striker.Height = striker.Width = radius;
-            striker.Fill = new SolidColorBrush (color);
+            carromObject.Fill = new SolidColorBrush (color);
+            }
+
+        public void SetStrikerOrigin (Point p)
+            {
+            base.SetOrigin (p);
             }
 
         //Will be used to move a Striker

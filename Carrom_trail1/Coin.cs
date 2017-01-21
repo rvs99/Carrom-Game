@@ -8,28 +8,46 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 
 
-namespace Carrom_trail1
+namespace Carrom
     {
     class Coin : CarromObject
         {
         //assign this value from config file
-        int weight;
-        public Ellipse coin;
-        Player player;
-        string coinNumber;
-        bool isQueen;
+        public double Weight
+            {
+            get; set;
+            }
+        public Point Origin
+            {
+            get; set;
+            }
+        public bool IsQueen
+            {
+            get; set;
+            }
+        public Player Player
+            {
+            get; set;
+            }
+        public int CoinNumber
+            {
+            get; set;
+            }
 
         public void AssignPlayer (Player player)
             {
-            this.player = player;
+            Player = player;
             }
 
         //Constructor
-        public Coin (int radius, Point origin, Color color) : base (radius, origin)
+        public Coin (int radius, Color color) : base (radius)
             {
-            coin = new Ellipse ();
-            coin.Height = coin.Width = radius;
-            coin.Fill = new SolidColorBrush (color);
+            carromObject.Fill = new SolidColorBrush (color);
+            }
+
+        public void SetCoinOrigin (Point p)
+            {
+            base.SetOrigin (p);
             }
 
         //Will be used to move a Coin

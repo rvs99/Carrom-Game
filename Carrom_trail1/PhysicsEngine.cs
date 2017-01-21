@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Carrom_trail1
+namespace Carrom
     {
     public class PhysicsEngine
         {

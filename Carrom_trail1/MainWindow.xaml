@@ -1,22 +1,197 @@
-﻿<Window x:Class="Carrom_trail1.MainWindow"
+﻿<Window x:Class="Carrom.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Carrom_trail1"
+        xmlns:local="clr-namespace:Carrom"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1000" Loaded="Window_Loaded">
-    <Grid>
-        <Canvas Name="canvas"
-                HorizontalAlignment="Left" 
-                Height="740" 
-                Width="740" 
-                Margin="18,18,0,0" 
-                VerticalAlignment="Top">
-            <Rectangle Height="740" Width="740" Fill="AliceBlue" ClipToBounds="True"/>
-        </Canvas>
-        <Label x:Name="labelX" Content="" HorizontalAlignment="Left" Margin="796,55,0,0" VerticalAlignment="Top" Width="97"/>
-        <Label x:Name="labelY" Content="" HorizontalAlignment="Left" Margin="796,86,0,0" VerticalAlignment="Top" Width="97"/>
+    <Canvas Name="canvas"
+            HorizontalAlignment="Left" 
+            Height="740" 
+            Width="740" 
+            VerticalAlignment="Top"
+            
+            MouseLeftButtonDown="canvas_MouseLeftButtonDown"
+            >
+        <Rectangle Height="740"
+                       Width="740" 
+                       Fill="#FFEEC591"
+                       ClipToBounds="True" />
 
-    </Grid>
+        <!--bottom lines and circles-->
+        <Line X1="133" 
+                  Y1="637"
+                  X2="603" 
+                  Y2="637"
+                  Stroke="Black"
+                  StrokeThickness="4" Canvas.Top="13" />
+        <Line X1="133" 
+                  Y1="606"
+                  X2="603"
+                  Y2="606"
+                  Stroke="Black"
+                  StrokeThickness="2" Canvas.Top="13" />
+        <Ellipse Fill="Red" 
+                     Height="34" 
+                     Width="34"
+                     Canvas.Left="123" 
+                     Canvas.Bottom="100"   
+                     Stroke="Black"
+                     StrokeThickness="4" Canvas.Top="619" />
+        <Ellipse Fill="Red" 
+                     Height="34"               
+                     Width="34" 
+                     Canvas.Right="123" 
+                     Canvas.Bottom="100"
+                     Stroke="Black"
+                     StrokeThickness="4" Canvas.Left="583" Canvas.Top="619" />
+
+        <!--Upper Lines and circles-->
+        <Line X1="135" 
+                  Y1="103"
+                  X2="603" 
+                  Y2="103"
+                  Stroke="Black"
+                  StrokeThickness="4" Canvas.Top="-15" Canvas.Left="1" />
+        <Line X1="135"              
+                  Y1="131"           
+                  X2="603" 
+                  Y2="131"
+                  Stroke="Black"
+                  StrokeThickness="2" Canvas.Top="-13" Canvas.Left="1" />
+        <Ellipse Fill="Red" 
+                 Height="34" 
+                 Width="34" 
+                 Canvas.Left="124" 
+                 Canvas.Top="85"
+                 Stroke="Black"
+                 StrokeThickness="4"></Ellipse>
+        <Ellipse Fill="Red" 
+                     Height="34" 
+                     Width="34" 
+                     Canvas.Right="123" 
+                     Canvas.Top="85"
+                     Stroke="Black"
+                     StrokeThickness="4" Canvas.Left="584"></Ellipse>
+
+        <!--Left side lines and circles-->
+        <Line X1="103"            
+                  Y1="153"
+                  X2="103" 
+                  Y2="586"
+                  Stroke="Black"
+                  StrokeThickness="4" />
+        <Line X1="131" 
+                  Y1="153"
+                  X2="131" 
+                  Y2="586"
+                  Stroke="Black"
+                  StrokeThickness="2" />
+        <Ellipse Fill="Red" 
+                     Height="34" 
+                     Width="34" 
+                     Canvas.Left="100" 
+                     Canvas.Top="140"
+                     Stroke="Black"
+                     StrokeThickness="4" />
+        <Ellipse Fill="Red" 
+                     Height="34" 
+                     Width="34" 
+                     Canvas.Left="100" 
+                     Canvas.Bottom="140"
+                     Stroke="Black"
+                     StrokeThickness="4" />
+
+        <!--right side lines and circles-->
+        <Line X1="637" 
+                  Y1="153"
+                  X2="637" 
+                  Y2="586"
+                  Stroke="Black"
+                  StrokeThickness="4" />
+        <Line X1="609" 
+                  Y1="153"
+                  X2="609" 
+                  Y2="586"
+                  Stroke="Black"
+                  StrokeThickness="2" />
+        <Ellipse Fill="Red" 
+                     Height="34" 
+                     Width="34" 
+                     Canvas.Right="100" 
+                     Canvas.Top="140"
+                     Stroke="Black"
+                     StrokeThickness="4"></Ellipse>
+        <Ellipse Fill="Red" 
+                     Height="34" 
+                     Width="34" 
+                     Canvas.Right="100" 
+                     Canvas.Bottom="140"
+                     Stroke="Black"
+                     StrokeThickness="4"></Ellipse>
+
+        <!--pockets-->
+        <!--<Ellipse Fill="Black" 
+                     Height="44" 
+                     Width="44"/>-->
+        <!--<Ellipse Fill="Black" 
+                     Height="44" 
+                     Width="44" 
+                     Canvas.Right="0"/>-->
+        <!--<Ellipse Fill="Black" 
+                     Height="44" 
+                     Width="44" 
+                     Canvas.Bottom="0"/>
+            <Ellipse Fill="Black" 
+                     Height="44" 
+                     Width="44" 
+                     Canvas.Bottom="0" 
+                     Canvas.Right="0"/>-->
+
+        <!--center circles-->
+        <Ellipse Name="Center" Fill="Red" 
+                     Height="32" 
+                     Width="32" 
+                     Canvas.Left="354" 
+                     Canvas.Top="354" />
+        <Ellipse Stroke="Black" 
+                     StrokeThickness="4" 
+                     Height="170" 
+                     Width="170" 
+                     Canvas.Left="285" 
+                     Canvas.Top="285" />
+
+        <!--striker-->
+        <!--<Ellipse Height="28" 
+                     Width="28" 
+                     Fill="White" 
+                     Canvas.Bottom="104" 
+                     Canvas.Right="200" />-->
+        <Line X1="22"
+                  Y1="22"
+                  X2="718"
+                  Y2="718"
+                  Stroke="Black"
+                  StrokeThickness="2"/>
+
+        <Line X1="718"
+                  Y1="22"
+                  X2="22"
+                  Y2="718"
+                  Stroke="Black"
+                  StrokeThickness="2"/>
+    </Canvas>
+    <!--<Label x:Name="labelX" 
+               Content="Player One" 
+               HorizontalAlignment="Left" 
+               Margin="796,55,0,0" 
+               VerticalAlignment="Top" 
+               Width="97"/>
+        <Label x:Name="labelY" 
+               Content="Plalyer Two" 
+               HorizontalAlignment="Left" 
+               Margin="796,86,0,0" 
+               VerticalAlignment="Top" 
+               Width="97"/>-->
 </Window>

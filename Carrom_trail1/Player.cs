@@ -4,16 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Carrom_trail1
+namespace Carrom
     {
     class Player
         {
-        string name;
-        int score;
+        public string Name
+            {
+            get; set;
+            }
+        public int Score
+            {
+            get; set;
+            }
 
         public Player (string name)
             {
-            this.name = name;
+            Name = name;
+            Score = 0;
+            }
+
+        public void AddScore (int score)
+            {
+            Score += score;
             }
         }
     }

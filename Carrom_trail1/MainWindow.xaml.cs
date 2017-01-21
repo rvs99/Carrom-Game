@@ -15,68 +15,81 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace Carrom_trail1
+namespace Carrom
     {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
         {
-        private DispatcherTimer timer,valueChanger; // timer object
+        private DispatcherTimer timer, valueChanger; // timer object
         private Vector speed; // movement in pixels/second, initially zero
-        int speed1=0;
-        Ellipse el;
-        Coin c;
-
+        int speed1 = 0;
         public MainWindow ()
             {
             InitializeComponent ();
+            Game.carromBoard = canvas;
             }
 
         private void Window_Loaded (object sender, RoutedEventArgs e)
             {
-            c = new Coin (31, new Point(50, 100), Colors.Black);
+            Game newGame = new Game ();
+            newGame.BeginGame ();
 
-            canvas.Children.Add (c.coin);
-            Canvas.SetLeft (c.coin, 50);
-            Canvas.SetTop (c.coin, 100);
 
-            
 
-            timer = new DispatcherTimer ();
-            valueChanger = new DispatcherTimer ();
-            speed = new Vector (0, 0);
+            //timer = new DispatcherTimer ();
+            //valueChanger = new DispatcherTimer ();
+            //speed = new Vector (0, 0);
 
-            timer.Interval = TimeSpan.FromMilliseconds (10); // update 20 times/second
-            timer.Tick += TimerTick;
-            timer.Start ();
+            //timer.Interval = TimeSpan.FromMilliseconds (10); // update 20 times/second
+            //timer.Tick += TimerTick;
+            //timer.Start ();
 
-            valueChanger.Interval = TimeSpan.FromMilliseconds (1);
-            valueChanger.Tick += ValueChanger;
-            valueChanger.Start ();
+            //valueChanger.Interval = TimeSpan.FromMilliseconds (1);
+            //valueChanger.Tick += ValueChanger;
+            //valueChanger.Start ();
             }
 
         private void ValueChanger (object sender, EventArgs e)
             {
-            if (Canvas.GetLeft (c.coin) == 200)
-                speed1 -= 10;
-            else
-                speed1 += 10;
+            //if (Canvas.GetLeft (c) == 200)
+            //    speed1 -= 10;
+            //else
+            //    speed1 += 10;
+            }
+
+        //private void canvas_MouseDown (object sender, MouseButtonEventArgs e)
+        //    {
+        //    if (Game.striker.GetBaseElement().IsMouseOver)
+        //        {
+        //        Point p = e.GetPosition (this);
+        //        Game.striker.SetStrikerOrigin (p);
+        //        }
+        //    }
+
+        private void canvas_MouseLeftButtonDown (object sender, MouseButtonEventArgs e)
+            {
+            if (Game.striker.GetBaseElement ().IsMouseOver)
+                {
+                Point p = e.GetPosition (this);
+                Game.striker.SetStrikerOrigin (p);
+                }
             }
 
         private void TimerTick (object sender, EventArgs e)
             {
             //el.RenderTransform = new ScaleTransform (1.25, 1.25, el.Width / 2, el.Height / 2);
-            Canvas.SetLeft (c.coin, Canvas.GetLeft (c.coin) + speed1);
+            //Canvas.SetLeft (c, Canvas.GetLeft (c) + speed1);
             //Canvas.SetTop (el, Canvas.GetTop (el) + 20);
-            if (canvas.IsMouseOver)
-                {
-                canvas.MouseMove +=  (sender1, e1) =>
-                {
-                    labelX.Content = "X = " + e1.GetPosition (canvas).X;
-                    labelY.Content = "Y = " + e1.GetPosition (canvas).Y;
-                };
-                }
+            //if (canvas.IsMouseOver)
+            //    {
+            //    canvas.MouseMove += (sender1, e1) =>
+            //   {
+            //       labelX.Content = "X = " + e1.GetPosition (canvas).X;
+            //       labelY.Content = "Y = " + e1.GetPosition (canvas).Y;
+            //   };
+            //    }
             //DoubleAnimation
             }
         }
