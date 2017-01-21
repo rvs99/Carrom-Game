@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Carrom
@@ -24,6 +25,9 @@ namespace Carrom
         //striker must be in Player 1's hand
         public void BeginGame ()
             {
+            //Start PhysicsEngine
+            PhysicsEngine.Start ();
+
             //Initiate two players
             playerOne = new Player ("Rahul");
             playerTwo = new Player ("Ajinkya");
@@ -55,10 +59,25 @@ namespace Carrom
 
             //Create Striker
             striker = new Striker (14,Colors.White);
-            striker.SetStrikerOrigin (new Point (370, 633));
+            striker.SetInitialPoint (new Point (370, 633));
+            striker.Update ();
             striker.AddToGame ();
+            striker.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
+            striker.GetBaseElement ().MouseLeftButtonDown += TestMethod ;
+
+            queen = new Coin (28, Colors.BlueViolet);
+            queen.SetInitialPoint (new Point (717, 258));
+            queen.Update ();
+            queen.AddToGame ();
+            queen.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
 
             //Give Striker in Player One's hand
+            }
+
+        private void TestMethod (object sender, MouseButtonEventArgs e)
+            {
+            
+            PhysicsEngine.HitStriker (ref striker, 50, 5.49779);
             }
 
         //All standard rules that applies in the turn must apply here

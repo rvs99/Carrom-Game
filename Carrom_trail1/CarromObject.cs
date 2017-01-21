@@ -12,23 +12,44 @@ namespace Carrom
     public class CarromObject
         {
         protected Ellipse carromObject;
-        protected int radius;
+        public int Radius
+            {
+            get; set;
+            }
         protected int origin_X, origin_Y;
 
-
+        public Point initialPoint;
+        
         protected CarromObject (int radius)
             {
             this.carromObject = new Ellipse ();
             this.carromObject.Height = this.carromObject.Width = radius + radius;
-            this.radius = radius;
+            this.Radius = radius;
+            initialPoint = new Point ();
             }
 
-        protected void SetOrigin (Point origin)
+        public void SetInitialPoint (Point p)
+            {
+            initialPoint.X = p.X;
+            initialPoint.Y = p.Y;
+            SetOrigin (p);
+            }
+
+        public Point GetInitialPoint ()
+            {
+            return initialPoint;
+            }
+
+        public void SetOrigin (Point origin)
             {
             this.origin_X = (int)Math.Round (origin.X);
             this.origin_Y = (int)Math.Round (origin.Y);
-            Canvas.SetLeft (this.carromObject, this.origin_X - this.radius);
-            Canvas.SetTop (this.carromObject, this.origin_Y - this.radius);
+            }
+
+        public void Update ()
+            {
+            Canvas.SetLeft (this.carromObject, this.origin_X - this.Radius);
+            Canvas.SetTop (this.carromObject, this.origin_Y - this.Radius);
             }
 
         public void AddToGame ()

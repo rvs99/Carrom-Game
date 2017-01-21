@@ -2,59 +2,135 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Carrom
     {
     public class PhysicsEngine
         {
+        //static List<CarromObject> listOfCoins;
+        //Striker striker;
+        //static List<CarromObject> listOfPockets;
+        static DispatcherTimer timer, changeStrikerValues;
+        static double strikerForce, strikerAngle;
+        static List<Point> allPoints;
 
-        List<CarromObject> listOfCoins = new List<CarromObject> (19);
-        Striker striker;
-        List<CarromObject> listOfPockets = new List<CarromObject> (4);
-
-
-        public void AddObject (CarromObject obj)
+        public static void Start ()
             {
-            try
-                {
-                if (obj as Coin != null)
-                    {
-                    listOfCoins.Add (obj as Coin);
-                    }
-                else if (obj as Striker != null)
-                    {
-                    striker = obj as Striker;
-                    }
-                else if (obj as Pocket != null)
-                    {
-                    listOfPockets.Add( obj as Striker);
-                    }
-                }
-            catch (Exception)
-                {
-
-                throw;
-                }
-            
+            //listOfCoins = new List<CarromObject> (19);
+            //listOfPockets = new List<CarromObject> (4);
+            timer = new DispatcherTimer ();
+            timer.Interval = TimeSpan.FromMilliseconds (10);
+            timer.Tick += UpdateUI;
+            timer.Start ();
+            allPoints = new List<Point> ();
             }
+
+        private static void UpdateUI (object sender, EventArgs e)
+            {
+            //Update all coins
+
+            //Update striker
+            Game.striker.Update ();
+            }
+
+        //public void AddObject (CarromObject obj)
+        //    {
+        //    try
+        //        {
+        //        if (obj as Coin != null)
+        //            {
+        //            listOfCoins.Add (obj as Coin);
+        //            }
+        //        else if (obj as Striker != null)
+        //            {
+        //            striker = obj as Striker;
+        //            }
+        //        else if (obj as Pocket != null)
+        //            {
+        //            listOfPockets.Add( obj as Striker);
+        //            }
+        //        }
+        //    catch (Exception)
+        //        {
+
+        //        throw;
+        //        }
+            
+        //    }
 
         //Will be used to move a CarromObject
         //Two scenarios 
         //  1. Apply force, direction and CarromObject will stop at perticular point
         //  2. Apply force, direction and CarromObject will collide with other CarromObjects (Coins or Striker or Pocket) or Edge
-        public void HitCarromObject (CarromObject obj, float force, float angle)
+
+        public static void HitStriker (ref Striker obj, double force, double angle)
             {
+            //int x = (int)Math.Round (obj.GetOrigin ().X + GetStoppingDistance (force) * Math.Cos (angle));
+            //int y = (int)Math.Round (obj.GetOrigin ().Y + GetStoppingDistance (force) * Math.Sin (angle));
+            //allPoints = GetAllPointsBetweenTwoPoints (obj.GetOrigin (), new Point (x, y));
 
-            //while ( obj not reaches its final point )
-                //Move to perticular direction
+            SetStrikerInput (force, angle);
 
+            changeStrikerValues = new DispatcherTimer ();
+            changeStrikerValues.Interval = TimeSpan.FromMilliseconds (10);
+            changeStrikerValues.Tick += ChangeStrikerValues;
+            changeStrikerValues.Start ();
+            //change
+
+            //foreach (var p in allPoints)
+            //    {
+            //if (!obj.GetOrigin ().Equals (new Point (x, y)))
+            //    {
+            //}
+            //Thread.Sleep (100);
+            //    }
+            //while (obj.GetOrigin ().Equals (new Point (x, y)))
+            //    {
+            //    }
+            //Move to perticular direction
             //Check if it collides with others
-                
             //--------If yes, recalculate current objects direction and force
             //--------and find other collided objects and call HitCarromObject with its direction and force
-
             //--------If no, continue
+            }
+        
+        public static void SetStrikerInput (double force, double angle)
+            {
+            strikerForce = force;
+            strikerAngle = angle;
+            Point strikerOrigin = Game.striker.GetOrigin ();
+
+            int x = (int)Math.Round (strikerOrigin.X + GetStoppingDistance (force) * Math.Cos (angle));
+            int y = (int)Math.Round (strikerOrigin.Y + GetStoppingDistance (force) * Math.Sin (angle));
+            allPoints = GetAllPointsBetweenTwoPoints (strikerOrigin, new Point (x, y));
+            }
+        static int i = 0;
+        private static void ChangeStrikerValues (object sender, EventArgs e)
+            {
+            try
+                {
+                isCollided (Game.striker);
+                Game.striker.SetOrigin (allPoints.ElementAt (i++));
+                }
+            catch (ArgumentOutOfRangeException)
+                {
+                changeStrikerValues.Stop ();
+                }
+            
+            }
+
+        public static Point GetPointFrom (Point p, double force, double angle, int timeInMillis)
+            {
+            Point result = new Point ();
+            double distance = 0 * timeInMillis + (1 / 2 )*((-0.25 * 9.8) * (timeInMillis * timeInMillis));
+            result.X = (int)Math.Round (p.X + distance * Math.Cos (angle));
+            result.Y = (int)Math.Round (p.Y + distance * Math.Sin (angle));
+            return result;
             }
 
         public enum CollisionResult
@@ -63,20 +139,29 @@ namespace Carrom
             Edge,
             Coin,
             Striker
-            }
+            };
 
-        public CollisionResult isCollided (CarromObject obj)
+        public static CollisionResult isCollided (CarromObject obj)
             {
             //Check if is collided with Edge
 
             //Check if it is collided with other Coin
+            var dx = obj.GetOrigin().X - Game.queen.GetOrigin().X;
+            var dy = obj.GetOrigin ().Y - Game.queen.GetOrigin ().Y;
 
+            var distance = Math.Sqrt (dx * dx + dy * dy);
+
+            if (distance < obj.Radius + Game.queen.Radius)
+                {
+                obj.GetBaseElement ().Fill = new SolidColorBrush(Colors.Red);
+                return CollisionResult.Coin;
+                }
 
             //Check if it is going inside Pocket
             return CollisionResult.None;
             }
 
-        public double GetStoppingDistance (CarromObject obj, double force)
+        public static double GetStoppingDistance (double force)
             {
             double coefficientOfFriction = 0.25 * 9.8;
             double stoppingDistance = 0.0F;
@@ -86,5 +171,54 @@ namespace Carrom
             return stoppingDistance;
             }
 
+        public static List<Point> GetAllPointsBetweenTwoPoints (Point one, Point two)
+            {
+            List<Point> allPoints = new List<Point> ();
+            int w = (int) Math.Round (two.X - one.X);
+            int h = (int)Math.Round (two.Y - one.Y);
+            int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+            if (w < 0)
+                dx1 = -1;
+            else if (w > 0)
+                dx1 = 1;
+            if (h < 0)
+                dy1 = -1;
+            else if (h > 0)
+                dy1 = 1;
+            if (w < 0)
+                dx2 = -1;
+            else if (w > 0)
+                dx2 = 1;
+            int longest = Math.Abs (w);
+            int shortest = Math.Abs (h);
+            if (!(longest > shortest))
+                {
+                longest = Math.Abs (h);
+                shortest = Math.Abs (w);
+                if (h < 0)
+                    dy2 = -1;
+                else if (h > 0)
+                    dy2 = 1;
+                dx2 = 0;
+                }
+            int numerator = longest >> 1;
+            for (int i = 0; i <= longest; i++)
+                {
+                allPoints.Add (one);
+                numerator += shortest;
+                if (!(numerator < longest))
+                    {
+                    numerator -= longest;
+                    one.X += dx1;
+                    one.Y += dy1;
+                    }
+                else
+                    {
+                    one.X += dx2;
+                    one.Y += dy2;
+                    }
+                }
+            return allPoints;
+            }
         }
     }

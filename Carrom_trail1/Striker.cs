@@ -9,7 +9,7 @@ using System.Windows.Shapes;
 
 namespace Carrom
     {
-    class Striker : CarromObject
+    public class Striker : CarromObject
         {
         //assign this value from config file
         int weight;
@@ -19,10 +19,10 @@ namespace Carrom
             carromObject.Fill = new SolidColorBrush (color);
             }
 
-        public void SetStrikerOrigin (Point p)
-            {
-            base.SetOrigin (p);
-            }
+        //public void SetStrikerOrigin (Point p)
+        //    {
+        //    base.SetOrigin (p);
+        //    }
 
         //Will be used to move a Striker
         //Two scenarios 

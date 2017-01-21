@@ -10,8 +10,6 @@
             Height="740" 
             Width="740" 
             VerticalAlignment="Top"
-            
-            MouseLeftButtonDown="canvas_MouseLeftButtonDown"
             >
         <Rectangle Height="740"
                        Width="740" 
