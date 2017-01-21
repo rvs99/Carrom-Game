@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Carrom"
-        mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1000" Loaded="Window_Loaded">
     <Canvas Name="canvas"
             HorizontalAlignment="Left" 
@@ -25,13 +24,13 @@
                   X2="603" 
                   Y2="637"
                   Stroke="Black"
-                  StrokeThickness="4" Canvas.Top="13" />
+                  StrokeThickness="4" Canvas.Top="14" Canvas.Left="3" />
         <Line X1="133" 
                   Y1="606"
                   X2="603"
                   Y2="606"
                   Stroke="Black"
-                  StrokeThickness="2" Canvas.Top="13" />
+                  StrokeThickness="2" Canvas.Top="14" Canvas.Left="3" />
         <Ellipse Fill="Red" 
                      Height="34" 
                      Width="34"
@@ -53,7 +52,7 @@
                   X2="603" 
                   Y2="103"
                   Stroke="Black"
-                  StrokeThickness="4" Canvas.Top="-15" Canvas.Left="1" />
+                  StrokeThickness="4" Canvas.Top="-16" Canvas.Left="1" />
         <Line X1="135"              
                   Y1="131"           
                   X2="603" 
@@ -115,7 +114,7 @@
                   X2="609" 
                   Y2="586"
                   Stroke="Black"
-                  StrokeThickness="2" />
+                  StrokeThickness="2" Canvas.Left="-2" />
         <Ellipse Fill="Red" 
                      Height="34" 
                      Width="34" 
