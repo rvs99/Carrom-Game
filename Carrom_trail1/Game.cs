@@ -20,6 +20,7 @@ namespace Carrom
         public static Coin queen;
         public static Pocket[] pockets;
         public static Striker striker;
+        public static Striker sample;
 
         //Reset game stage here, all coins must be at initial position
         //striker must be in Player 1's hand
