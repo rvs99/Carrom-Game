@@ -15,7 +15,7 @@ namespace Carrom
         //static List<CarromObject> listOfCoins;
         //Striker striker;
         //static List<CarromObject> listOfPockets;
-        static DispatcherTimer timer, changeStrikerValues;
+        static DispatcherTimer timer, changeStrikerValues, changeCoinValues;
         static double strikerForce, strikerAngle;
         static List<Point> allPoints;
 
@@ -36,6 +36,7 @@ namespace Carrom
 
             //Update striker
             Game.striker.Update ();
+            Game.queen.Update ();
             }
 
         //public void AddObject (CarromObject obj)
@@ -98,7 +99,38 @@ namespace Carrom
             //--------and find other collided objects and call HitCarromObject with its direction and force
             //--------If no, continue
             }
-        
+
+        public static void HitCoin (ref Coin obj, double force, double angle)
+            {
+            //int x = (int)Math.Round (obj.GetOrigin ().X + GetStoppingDistance (force) * Math.Cos (angle));
+            //int y = (int)Math.Round (obj.GetOrigin ().Y + GetStoppingDistance (force) * Math.Sin (angle));
+            //allPoints = GetAllPointsBetweenTwoPoints (obj.GetOrigin (), new Point (x, y));
+
+            SetCoinInput (force, angle);
+
+            changeCoinValues = new DispatcherTimer ();
+            changeCoinValues.Interval = TimeSpan.FromMilliseconds (10);
+            changeCoinValues.Tick += ChangeCoinValues;
+            changeCoinValues.Start ();
+            //change
+
+            //foreach (var p in allPoints)
+            //    {
+            //if (!obj.GetOrigin ().Equals (new Point (x, y)))
+            //    {
+            //}
+            //Thread.Sleep (100);
+            //    }
+            //while (obj.GetOrigin ().Equals (new Point (x, y)))
+            //    {
+            //    }
+            //Move to perticular direction
+            //Check if it collides with others
+            //--------If yes, recalculate current objects direction and force
+            //--------and find other collided objects and call HitCarromObject with its direction and force
+            //--------If no, continue
+            }
+
         public static void SetStrikerInput (double force, double angle)
             {
             strikerForce = force;
@@ -109,18 +141,46 @@ namespace Carrom
             int y = (int)Math.Round (strikerOrigin.Y + GetStoppingDistance (force) * Math.Sin (angle));
             allPoints = GetAllPointsBetweenTwoPoints (strikerOrigin, new Point (x, y));
             }
+
+        public static void SetCoinInput (double force, double angle)
+            {
+            coinForce = force;
+            coinAngle = angle + 3.14159;
+            Point coinOrigin = Game.queen.GetOrigin ();
+            allPoints.Clear ();
+            i = 0;
+            int x = (int)Math.Round (coinOrigin.X + GetStoppingDistance (force) * Math.Cos (coinAngle));
+            int y = (int)Math.Round (coinOrigin.Y + GetStoppingDistance (force) * Math.Sin (coinAngle));
+            allPoints = GetAllPointsBetweenTwoPoints (coinOrigin, new Point (x, y));
+            }
+
         static int i = 0;
+        private static double coinForce;
+        private static double coinAngle;
+
         private static void ChangeStrikerValues (object sender, EventArgs e)
             {
             try
                 {
-                if (isCollided (Game.striker) == CollisionResult.None)
+                CollisionResult collisionResult = isCollided (Game.striker);
+                if (collisionResult == CollisionResult.None)
                     {
                     Game.striker.SetOrigin (allPoints.ElementAt (i++));
                     }
                 else
                     {
                     changeStrikerValues.Stop ();
+
+                    switch (collisionResult)
+                        {
+                        case CollisionResult.Queen:
+                            Point strikerOrigin = Game.striker.GetOrigin ();
+                            Point coinOrigin = Game.queen.GetOrigin ();
+                            HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+
+
+                            break;
+                        }
                     }
                 }
             catch (ArgumentOutOfRangeException)
@@ -128,6 +188,39 @@ namespace Carrom
                 changeStrikerValues.Stop ();
                 }
             
+            }
+
+        private static void ChangeCoinValues (object sender, EventArgs e)
+            {
+            try
+                {
+                Game.queen.SetOrigin (allPoints.ElementAt (i++));
+                CollisionResult collisionResult = isCollided (Game.queen);
+                switch (collisionResult)
+                    {
+                    case CollisionResult.None:
+                        Game.queen.SetOrigin (allPoints.ElementAt (i++));
+                        break;
+                    case CollisionResult.Pocket:
+                        Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
+
+                        break;
+                    }
+                    
+                    //}
+                //else
+                    //{
+                  //  changeCoinValues.Stop ();
+                    //Point strikerOrigin = Game.striker.GetOrigin ();
+                    //Point coinOrigin = Game.queen.GetOrigin ();
+                    //HitStriker (ref Game.queen, 50, AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+                    //}
+                }
+            catch (ArgumentOutOfRangeException)
+                {
+                changeCoinValues.Stop ();
+                }
+
             }
 
         public static Point GetPointFrom (Point p, double force, double angle, int timeInMillis)
@@ -144,12 +237,31 @@ namespace Carrom
             None,
             Edge,
             Coin,
-            Striker
+            Striker,
+            Queen,
+            Pocket
             };
 
         public static CollisionResult isCollided (CarromObject obj)
             {
             //Check if is collided with Edge
+
+            //Check if it is in pocket
+            for (int i = 0; i < 4; i++)
+                {
+                var pocketDx = obj.GetOrigin ().X - Game.pockets[i].GetOrigin ().X;
+                var pocketDy = obj.GetOrigin ().Y - Game.pockets[i].GetOrigin ().Y;
+
+                var pocketDistance = Math.Sqrt (pocketDx * pocketDx + pocketDy * pocketDy);
+
+                if (pocketDistance <  Game.pockets[0].Radius - 2)
+                    {
+                    obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Black);
+                    changeCoinValues.Stop ();
+                    return CollisionResult.Pocket;
+                    }
+                }
+            
 
             //Check if it is collided with other Coin
             var dx = obj.GetOrigin().X - Game.queen.GetOrigin().X;
@@ -160,7 +272,7 @@ namespace Carrom
             if (distance < obj.Radius + Game.queen.Radius)
                 {
                 obj.GetBaseElement ().Fill = new SolidColorBrush(Colors.Red);
-                return CollisionResult.Coin;
+                return CollisionResult.Queen;
                 }
 
             //Check if it is going inside Pocket
@@ -225,6 +337,25 @@ namespace Carrom
                     }
                 }
             return allPoints;
+            }
+
+        public static double AngleBetweenTwoLines (Point a, Point b, Point c, Point d)
+            {
+            //double m1 = (b.Y - a.Y) / (b.X - a.X);
+            //double m2 = (d.Y - c.Y) / (d.X - c.X);
+
+            //double angle = Math.Atan (Math.Abs((m2-m1)/(1+(m2*m1))));
+
+
+            //return angle;
+
+            double theta1 = Math.Atan2 (b.Y - a.Y, b.X - a.X);
+            double theta2 = Math.Atan2 (d.Y - c.Y, d.X - c.X);
+
+            double diff = Math.Abs (theta1 - theta2);
+
+            double angle = Math.Min (diff, Math.Abs (180 - diff));
+            return angle;
             }
         }
     }

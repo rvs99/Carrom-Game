@@ -17,6 +17,13 @@ namespace Carrom
             get; set;
             }
         protected int origin_X, origin_Y;
+        public enum Border
+            {
+            TOP,
+            BOTTOM,
+            LEFT,
+            RIGHT
+            }
 
         public Point initialPoint;
         

@@ -10,13 +10,19 @@ using System.Windows.Shapes;
 
 namespace Carrom
     {
-    class Coin : CarromObject
+    public class Coin : CarromObject
         {
         //assign this value from config file
         public double Weight
             {
             get; set;
             }
+
+        public Border LastHitBorder
+            {
+            get; set;
+            }
+
         public Point Origin
             {
             get; set;
@@ -58,6 +64,5 @@ namespace Carrom
             {
 
             }
-
         }
     }

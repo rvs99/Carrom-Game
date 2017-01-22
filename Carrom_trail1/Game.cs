@@ -37,7 +37,16 @@ namespace Carrom
             pockets[0] = new Pocket (22, new Point(22,22));
             pockets[1] = new Pocket (22, new Point (718, 22));
             pockets[2] = new Pocket (22, new Point (22, 718));
-            pockets[2] = new Pocket (22, new Point (718, 718));
+            pockets[3] = new Pocket (22, new Point (718, 718));
+
+            pockets[0].Update ();
+            pockets[0].AddToGame ();
+            pockets[1].Update ();
+            pockets[1].AddToGame ();
+            pockets[2].Update ();
+            pockets[2].AddToGame ();
+            pockets[3].Update ();
+            pockets[3].AddToGame ();
 
             //Create all coins
             //coins = new Coin[18];
@@ -65,8 +74,8 @@ namespace Carrom
             striker.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
             striker.GetBaseElement ().MouseLeftButtonDown += TestMethod ;
 
-            queen = new Coin (28, Colors.BlueViolet);
-            queen.SetInitialPoint (new Point (717, 258));
+            queen = new Coin (14, Colors.BlueViolet);
+            queen.SetInitialPoint (new Point (370, 370));
             queen.Update ();
             queen.AddToGame ();
             queen.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
@@ -77,7 +86,7 @@ namespace Carrom
         private void TestMethod (object sender, MouseButtonEventArgs e)
             {
             
-            PhysicsEngine.HitStriker (ref striker, 50, 5.49779);
+            PhysicsEngine.HitStriker (ref striker, 40, 4.6338492);
             }
 
         //All standard rules that applies in the turn must apply here

@@ -14,6 +14,11 @@ namespace Carrom
         //assign this value from config file
         int weight;
 
+        public Border LastHitBorder
+            {
+            get; set;
+            }
+
         public Striker (int radius, Color color) : base (radius)
             {
             carromObject.Fill = new SolidColorBrush (color);

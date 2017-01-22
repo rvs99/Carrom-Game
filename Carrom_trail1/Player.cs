@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Carrom
     {
-    class Player
+    public class Player
         {
         public string Name
             {
