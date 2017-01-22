@@ -114,8 +114,14 @@ namespace Carrom
             {
             try
                 {
-                isCollided (Game.striker);
-                Game.striker.SetOrigin (allPoints.ElementAt (i++));
+                if (isCollided (Game.striker) == CollisionResult.None)
+                    {
+                    Game.striker.SetOrigin (allPoints.ElementAt (i++));
+                    }
+                else
+                    {
+                    changeStrikerValues.Stop ();
+                    }
                 }
             catch (ArgumentOutOfRangeException)
                 {
