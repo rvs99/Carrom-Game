@@ -86,7 +86,7 @@ namespace Carrom
         private void TestMethod (object sender, MouseButtonEventArgs e)
             {
             
-            PhysicsEngine.HitStriker (ref striker, 40, 4.6338492);
+            PhysicsEngine.HitStriker (ref striker, 70, 5.41052);
             }
 
         //All standard rules that applies in the turn must apply here

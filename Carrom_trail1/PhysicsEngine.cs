@@ -177,8 +177,9 @@ namespace Carrom
                             Point strikerOrigin = Game.striker.GetOrigin ();
                             Point coinOrigin = Game.queen.GetOrigin ();
                             HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
-
-
+                            break;
+                        case CollisionResult.Edge:
+                            Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                             break;
                         }
                     }
@@ -245,6 +246,29 @@ namespace Carrom
         public static CollisionResult isCollided (CarromObject obj)
             {
             //Check if is collided with Edge
+            var x1 = 740;
+            var y1 = 0;
+            var x2 = 740;
+            var y2 = 740;
+            Point strikerOrigin = Game.striker.GetOrigin ();
+            var xCircle = strikerOrigin.X;
+            var yCircle = strikerOrigin.Y;
+            var radius = Game.striker.Radius;
+
+            double dx1, dy1, A, B, C, det, t;
+
+            dx1 = x2 - x1;
+            dy1 = y2 - y1;
+
+            A = dx1 * dx1 + dy1 * dy1;
+            B = 2 * (dx1 * (x1 - xCircle) + dy1 * (y1 - yCircle));
+            C = (x1 - xCircle) * (x1 - xCircle) + (y1 - yCircle) * (y1 - yCircle) - radius * radius;
+
+            det = B * B - 4 * A * C;
+            if (det == 0)
+                return CollisionResult.Edge;
+            else
+                return CollisionResult.None;
 
             //Check if it is in pocket
             for (int i = 0; i < 4; i++)
