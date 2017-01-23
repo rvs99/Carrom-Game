@@ -69,7 +69,7 @@ namespace Carrom
         //  1. Apply force, direction and CarromObject will stop at perticular point
         //  2. Apply force, direction and CarromObject will collide with other CarromObjects (Coins or Striker or Pocket) or Edge
 
-        public static void HitStriker (ref Striker obj, double force, double angle)
+        public void HitStriker (ref Striker obj, double force, double angle)
             {
             //int x = (int)Math.Round (obj.GetOrigin ().X + GetStoppingDistance (force) * Math.Cos (angle));
             //int y = (int)Math.Round (obj.GetOrigin ().Y + GetStoppingDistance (force) * Math.Sin (angle));
@@ -79,8 +79,47 @@ namespace Carrom
 
             changeStrikerValues = new DispatcherTimer ();
             changeStrikerValues.Interval = TimeSpan.FromMilliseconds (10);
-            changeStrikerValues.Tick += ChangeStrikerValues;
+            changeStrikerValues.Tick += (sender, e) => {
+                //Striker displacement code
+                try
+                    {
+                    List<Coin> collidedCoins = new List<Coin> ();
+                    List<CollisionResult> collisionResult = isCollided (Game.striker, ref collidedCoins);
+
+                    if (collisionResult[0] == CollisionResult.None)
+                        {
+                        Game.striker.SetOrigin (allPoints.ElementAt (i++));
+                        Game.striker.initialHitTime += 10;
+                        //Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerForce, strikerAngle, Game.striker.initialHitTime));
+                        }
+                    else
+                        {
+                        changeStrikerValues.Stop ();
+                        foreach (var collisionObject in collisionResult)
+                            {
+                            switch (collisionObject)
+                                {
+                                case CollisionResult.Queen:
+                                    Point strikerOrigin = Game.striker.GetOrigin ();
+                                    Point coinOrigin = Game.queen.GetOrigin ();
+                                    HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+                                    break;
+                                case CollisionResult.Edge:
+                                    Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                catch (ArgumentOutOfRangeException)
+                    {
+                    changeStrikerValues.Stop ();
+                    }
+                //end
+
+            };
             changeStrikerValues.Start ();
+
             //change
 
             //foreach (var p in allPoints)
@@ -100,7 +139,7 @@ namespace Carrom
             //--------If no, continue
             }
 
-        public static void HitCoin (ref Coin obj, double force, double angle)
+        public void HitCoin (ref Coin obj, double force, double angle)
             {
             //int x = (int)Math.Round (obj.GetOrigin ().X + GetStoppingDistance (force) * Math.Cos (angle));
             //int y = (int)Math.Round (obj.GetOrigin ().Y + GetStoppingDistance (force) * Math.Sin (angle));
@@ -110,7 +149,59 @@ namespace Carrom
 
             changeCoinValues = new DispatcherTimer ();
             changeCoinValues.Interval = TimeSpan.FromMilliseconds (10);
-            changeCoinValues.Tick += ChangeCoinValues;
+            changeCoinValues.Tick += (sender, e) =>
+            {
+                try
+                    {
+                    Game.queen.SetOrigin (allPoints.ElementAt (i++));
+                    List<Coin> collidedCoins = new List<Coin> ();
+                    List<CollisionResult> collisionResult = isCollided (Game.queen, ref collidedCoins);
+                    foreach (var collisionObject in collisionResult)
+                        {
+                        switch (collisionObject)
+                            {
+                            case CollisionResult.None:
+                                Game.queen.SetOrigin (allPoints.ElementAt (i++));
+                                break;
+
+                            case CollisionResult.Pocket:
+                                changeCoinValues.Stop ();
+                                Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
+                                break;
+
+                            case CollisionResult.Edge:
+                                changeCoinValues.Stop ();
+                                Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                break;
+
+                            //What if Queen hits one or more coins
+                            case CollisionResult.Coin:
+                                changeCoinValues.Stop ();
+                                for (int i = 0; i < collidedCoins.Count; i++)
+                                    ;
+                                    {
+                                    //Call HitCoin () method for each colliede coins
+                                    //HitCoin (ref collidedCoins[i], 30, 5.41052);
+                                    }
+                                break;
+                            }
+                        }
+
+
+                    //}
+                    //else
+                    //{
+                    //  changeCoinValues.Stop ();
+                    //Point strikerOrigin = Game.striker.GetOrigin ();
+                    //Point coinOrigin = Game.queen.GetOrigin ();
+                    //HitStriker (ref Game.queen, 50, AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+                    //}
+                    }
+                catch (ArgumentOutOfRangeException)
+                    {
+                    changeCoinValues.Stop ();
+                    }
+            };
             changeCoinValues.Start ();
             //change
 
@@ -158,83 +249,104 @@ namespace Carrom
         private static double coinForce;
         private static double coinAngle;
 
-        private static void ChangeStrikerValues (object sender, EventArgs e)
-            {
-            try
-                {
-                List<CollisionResult> collisionResult = isCollided (Game.striker);
+        //private static void ChangeStrikerValues (object sender, EventArgs e)
+        //    {
+        //    try
+        //        {
+        //        List<Coin> collidedCoins = new List<Coin> ();
+        //        List<CollisionResult> collisionResult = isCollided (Game.striker, ref collidedCoins);
 
-                if (collisionResult[0] == CollisionResult.None)
-                    {
-                    Game.striker.SetOrigin (allPoints.ElementAt (i++));
-                    }
-                else
-                    {
-                    changeStrikerValues.Stop ();
-                    foreach (var collisionObject in collisionResult)
-                        {
-                        switch (collisionObject)
-                            {
-                            case CollisionResult.Queen:
-                                Point strikerOrigin = Game.striker.GetOrigin ();
-                                Point coinOrigin = Game.queen.GetOrigin ();
-                                HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
-                                break;
-                            case CollisionResult.Edge:
-                                Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
-                                break;
-                            }
-                        }
-                    }
-                }
-            catch (ArgumentOutOfRangeException)
-                {
-                changeStrikerValues.Stop ();
-                }
-            
-            }
+        //        if (collisionResult[0] == CollisionResult.None)
+        //            {
+        //            //Game.striker.SetOrigin (allPoints.ElementAt (i++));
+        //            Game.striker.initialHitTime += 10;
+        //            Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerForce, strikerAngle, Game.striker.initialHitTime));
+                    
+        //            }
+        //        else
+        //            {
+        //            changeStrikerValues.Stop ();
+        //            foreach (var collisionObject in collisionResult)
+        //                {
+        //                switch (collisionObject)
+        //                    {
+        //                    case CollisionResult.Queen:
+        //                        Point strikerOrigin = Game.striker.GetOrigin ();
+        //                        Point coinOrigin = Game.queen.GetOrigin ();
+        //                        HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+        //                        break;
+        //                    case CollisionResult.Edge:
+        //                        Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    catch (ArgumentOutOfRangeException)
+        //        {
+        //        changeStrikerValues.Stop ();
+        //        }
+        //    }
 
-        private static void ChangeCoinValues (object sender, EventArgs e)
-            {
-            try
-                {
-                Game.queen.SetOrigin (allPoints.ElementAt (i++));
-                List<CollisionResult> collisionResult = isCollided (Game.queen);
-                foreach (var collisionObject in collisionResult)
-                    {
-                    switch (collisionObject)
-                        {
-                        case CollisionResult.None:
-                            Game.queen.SetOrigin (allPoints.ElementAt (i++));
-                            break;
-                        case CollisionResult.Pocket:
-                            Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
+        //private static void ChangeCoinValues (object sender, EventArgs e)
+        //    {
+        //    try
+        //        {
+        //        Game.queen.SetOrigin (allPoints.ElementAt (i++));
+        //        List<Coin> collidedCoins = new List<Coin> ();
+        //        List<CollisionResult> collisionResult = isCollided (Game.queen, ref collidedCoins);
+        //        foreach (var collisionObject in collisionResult)
+        //            {
+        //            switch (collisionObject)
+        //                {
+        //                case CollisionResult.None:
+        //                    Game.queen.SetOrigin (allPoints.ElementAt (i++));
+        //                    break;
 
-                            break;
-                        }
-                    }
+        //                case CollisionResult.Pocket:
+        //                    changeCoinValues.Stop ();
+        //                    Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
+        //                    break;
+
+        //                case CollisionResult.Edge:
+        //                    changeCoinValues.Stop ();
+        //                    Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+        //                    break;
+
+        //                //What if Queen hits one or more coins
+        //                case CollisionResult.Coin:
+        //                    changeCoinValues.Stop ();
+        //                    for (int i = 0; i < collidedCoins.Count; i++) ;
+        //                        {
+        //                        //Call HitCoin () method for each colliede coins
+        //                        //HitCoin (ref collidedCoins[i], 30, 5.41052);
+        //                        }
+        //                    break;
+        //                }
+        //            }
                 
                     
-                    //}
-                //else
-                    //{
-                  //  changeCoinValues.Stop ();
-                    //Point strikerOrigin = Game.striker.GetOrigin ();
-                    //Point coinOrigin = Game.queen.GetOrigin ();
-                    //HitStriker (ref Game.queen, 50, AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
-                    //}
-                }
-            catch (ArgumentOutOfRangeException)
-                {
-                changeCoinValues.Stop ();
-                }
+        //            //}
+        //        //else
+        //            //{
+        //          //  changeCoinValues.Stop ();
+        //            //Point strikerOrigin = Game.striker.GetOrigin ();
+        //            //Point coinOrigin = Game.queen.GetOrigin ();
+        //            //HitStriker (ref Game.queen, 50, AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+        //            //}
+        //        }
+        //    catch (ArgumentOutOfRangeException)
+        //        {
+        //        changeCoinValues.Stop ();
+        //        }
 
-            }
+        //    }
 
         public static Point GetPointFrom (Point p, double force, double angle, int timeInMillis)
             {
+            timeInMillis = Game.striker.initialHitTime += 10;
             Point result = new Point ();
-            double distance = 0 * timeInMillis + (1 / 2 )*((-0.25 * 9.8) * (timeInMillis * timeInMillis));
+            double distance = 1 * timeInMillis - (1 / 2 )*((0.25 * 9.8) * (timeInMillis * timeInMillis));
             result.X = (int)Math.Round (p.X + distance * Math.Cos (angle));
             result.Y = (int)Math.Round (p.Y + distance * Math.Sin (angle));
             return result;
@@ -250,7 +362,7 @@ namespace Carrom
             Pocket
             };
 
-        public static List<CollisionResult> isCollided (CarromObject obj)
+        public static List<CollisionResult> isCollided (CarromObject obj, ref List<Coin> collidedCoins)
             {
 
             List<CollisionResult> result = new List<CollisionResult> ();
@@ -263,11 +375,13 @@ namespace Carrom
 
                 var pocketDistance = Math.Sqrt (pocketDx * pocketDx + pocketDy * pocketDy);
 
+                //This condition will pass if provided CarromObject is pocketed
                 if (pocketDistance < Game.pockets[0].Radius - 2)
                     {
                     obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Black);
                     changeCoinValues.Stop ();
                     result.Add(CollisionResult.Pocket);
+                    break;
                     }
                 }
 

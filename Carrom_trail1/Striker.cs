@@ -13,7 +13,7 @@ namespace Carrom
         {
         //assign this value from config file
         int weight;
-
+        public int initialHitTime;
         public Border LastHitBorder
             {
             get; set;

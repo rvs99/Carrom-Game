@@ -23,10 +23,6 @@ namespace Carrom
             get; set;
             }
 
-        public Point Origin
-            {
-            get; set;
-            }
         public bool IsQueen
             {
             get; set;

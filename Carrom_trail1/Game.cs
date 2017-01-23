@@ -86,10 +86,11 @@ namespace Carrom
         private void TestMethod (object sender, MouseButtonEventArgs e)
             {
             //Use this statement for Striker to Coin detection and Coin to Pocket detection
-            //PhysicsEngine.HitStriker (ref striker, 40, 4.6338492);
-
+            PhysicsEngine engine = new PhysicsEngine ();
+            engine.HitStriker (ref striker, 40, 4.6338492);
+            Game.striker.initialHitTime = 0;
             //Use this line for Striker to Edge detection
-            PhysicsEngine.HitStriker (ref striker, 70, 5.41052);
+            //PhysicsEngine.HitStriker (ref striker, 70, 5.41052);
             }
 
         //All standard rules that applies in the turn must apply here
