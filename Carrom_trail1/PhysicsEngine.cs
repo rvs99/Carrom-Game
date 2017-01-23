@@ -162,25 +162,28 @@ namespace Carrom
             {
             try
                 {
-                CollisionResult collisionResult = isCollided (Game.striker);
-                if (collisionResult == CollisionResult.None)
+                List<CollisionResult> collisionResult = isCollided (Game.striker);
+
+                if (collisionResult[0] == CollisionResult.None)
                     {
                     Game.striker.SetOrigin (allPoints.ElementAt (i++));
                     }
                 else
                     {
                     changeStrikerValues.Stop ();
-
-                    switch (collisionResult)
+                    foreach (var collisionObject in collisionResult)
                         {
-                        case CollisionResult.Queen:
-                            Point strikerOrigin = Game.striker.GetOrigin ();
-                            Point coinOrigin = Game.queen.GetOrigin ();
-                            HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
-                            break;
-                        case CollisionResult.Edge:
-                            Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
-                            break;
+                        switch (collisionObject)
+                            {
+                            case CollisionResult.Queen:
+                                Point strikerOrigin = Game.striker.GetOrigin ();
+                                Point coinOrigin = Game.queen.GetOrigin ();
+                                HitCoin (ref Game.queen, 50, 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+                                break;
+                            case CollisionResult.Edge:
+                                Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                break;
+                            }
                         }
                     }
                 }
@@ -196,17 +199,21 @@ namespace Carrom
             try
                 {
                 Game.queen.SetOrigin (allPoints.ElementAt (i++));
-                CollisionResult collisionResult = isCollided (Game.queen);
-                switch (collisionResult)
+                List<CollisionResult> collisionResult = isCollided (Game.queen);
+                foreach (var collisionObject in collisionResult)
                     {
-                    case CollisionResult.None:
-                        Game.queen.SetOrigin (allPoints.ElementAt (i++));
-                        break;
-                    case CollisionResult.Pocket:
-                        Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
+                    switch (collisionObject)
+                        {
+                        case CollisionResult.None:
+                            Game.queen.SetOrigin (allPoints.ElementAt (i++));
+                            break;
+                        case CollisionResult.Pocket:
+                            Game.queen.GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
 
-                        break;
+                            break;
+                        }
                     }
+                
                     
                     //}
                 //else
@@ -243,18 +250,36 @@ namespace Carrom
             Pocket
             };
 
-        public static CollisionResult isCollided (CarromObject obj)
+        public static List<CollisionResult> isCollided (CarromObject obj)
             {
+
+            List<CollisionResult> result = new List<CollisionResult> ();
+
+            //Check if it is in pocket
+            for (int i = 0; i < 4; i++)
+                {
+                var pocketDx = obj.GetOrigin ().X - Game.pockets[i].GetOrigin ().X;
+                var pocketDy = obj.GetOrigin ().Y - Game.pockets[i].GetOrigin ().Y;
+
+                var pocketDistance = Math.Sqrt (pocketDx * pocketDx + pocketDy * pocketDy);
+
+                if (pocketDistance < Game.pockets[0].Radius - 2)
+                    {
+                    obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Black);
+                    changeCoinValues.Stop ();
+                    result.Add(CollisionResult.Pocket);
+                    }
+                }
+
             //Check if is collided with Edge
             var x1 = 740;
             var y1 = 0;
             var x2 = 740;
             var y2 = 740;
-            Point strikerOrigin = Game.striker.GetOrigin ();
-            var xCircle = strikerOrigin.X;
-            var yCircle = strikerOrigin.Y;
-            var radius = Game.striker.Radius;
-
+            Point CarromObjectOrigin = obj.GetOrigin ();
+            var xCircle = CarromObjectOrigin.X;
+            var yCircle = CarromObjectOrigin.Y;
+            var radius = obj.Radius;
             double dx1, dy1, A, B, C, det, t;
 
             dx1 = x2 - x1;
@@ -266,26 +291,7 @@ namespace Carrom
 
             det = B * B - 4 * A * C;
             if (det == 0)
-                return CollisionResult.Edge;
-            else
-                return CollisionResult.None;
-
-            //Check if it is in pocket
-            for (int i = 0; i < 4; i++)
-                {
-                var pocketDx = obj.GetOrigin ().X - Game.pockets[i].GetOrigin ().X;
-                var pocketDy = obj.GetOrigin ().Y - Game.pockets[i].GetOrigin ().Y;
-
-                var pocketDistance = Math.Sqrt (pocketDx * pocketDx + pocketDy * pocketDy);
-
-                if (pocketDistance <  Game.pockets[0].Radius - 2)
-                    {
-                    obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Black);
-                    changeCoinValues.Stop ();
-                    return CollisionResult.Pocket;
-                    }
-                }
-            
+                result.Add (CollisionResult.Edge);
 
             //Check if it is collided with other Coin
             var dx = obj.GetOrigin().X - Game.queen.GetOrigin().X;
@@ -296,11 +302,14 @@ namespace Carrom
             if (distance < obj.Radius + Game.queen.Radius)
                 {
                 obj.GetBaseElement ().Fill = new SolidColorBrush(Colors.Red);
-                return CollisionResult.Queen;
+                result.Add (CollisionResult.Queen);
                 }
 
-            //Check if it is going inside Pocket
-            return CollisionResult.None;
+            if (result.Count == 0)
+                {
+                result.Add (CollisionResult.None);
+                }
+            return result;
             }
 
         public static double GetStoppingDistance (double force)

@@ -85,7 +85,10 @@ namespace Carrom
 
         private void TestMethod (object sender, MouseButtonEventArgs e)
             {
-            
+            //Use this statement for Striker to Coin detection and Coin to Pocket detection
+            //PhysicsEngine.HitStriker (ref striker, 40, 4.6338492);
+
+            //Use this line for Striker to Edge detection
             PhysicsEngine.HitStriker (ref striker, 70, 5.41052);
             }
 
