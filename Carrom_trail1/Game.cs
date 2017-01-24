@@ -49,22 +49,32 @@ namespace Carrom
             pockets[3].AddToGame ();
 
             //Create all coins
-            //coins = new Coin[18];
-            //for player one
-            //for (int i = 0; i <= 9; i++)
-            //    {
-            //    coins[i] = new Coin (10, Colors.Black);
-            //    coins[i].AssignPlayer (playerOne);
-            //    coins[i].CoinNumber = i;
-            //    }
+            coins = new Coin[19];
 
-            ////for player two
-            //for (int i = 0; i <= 9; i++)
-            //    {
-            //    coins[i] = new Coin (10, Colors.WhiteSmoke);
-            //    coins[i].AssignPlayer (playerTwo);
-            //    coins[i].CoinNumber = i;
-            //    }
+            Random r = new Random ();
+            //for player one
+            for (int i = 0; i <= 9; i++)
+                {
+                coins[i] = new Coin (10, Colors.Black);
+                coins[i].SetInitialPoint (new Point (r.Next (5,730), r.Next (5,730)));
+                coins[i].GetBaseElement ().Stroke = new SolidColorBrush (Colors.White);
+                coins[i].AssignPlayer (playerOne);
+                coins[i].CoinNumber = i + 1;
+                coins[i].Update ();
+                coins[i].AddToGame ();
+                }
+
+            //for player two
+            for (int i = 10; i <= 17; i++)
+                {
+                coins[i] = new Coin (10, Colors.WhiteSmoke);
+                coins[i].SetInitialPoint (new Point (r.Next (730), r.Next (730)));
+                coins[i].AssignPlayer (playerTwo);
+                coins[i].GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
+                coins[i].CoinNumber = i + 1;
+                coins[i].Update ();
+                coins[i].AddToGame ();
+                }
 
             //Create Striker
             striker = new Striker (14,Colors.White);
@@ -74,11 +84,12 @@ namespace Carrom
             striker.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
             striker.GetBaseElement ().MouseLeftButtonDown += TestMethod ;
 
-            queen = new Coin (14, Colors.BlueViolet);
-            queen.SetInitialPoint (new Point (370, 370));
-            queen.Update ();
-            queen.AddToGame ();
-            queen.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
+            //Create queen
+            coins[18] = new Coin (14, Colors.BlueViolet);
+            coins[18].SetInitialPoint (new Point (730, 730));
+            coins[18].Update ();
+            coins[18].AddToGame ();
+            coins[18].GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
 
             //Give Striker in Player One's hand
             }
@@ -87,7 +98,11 @@ namespace Carrom
             {
             //Use this statement for Striker to Coin detection and Coin to Pocket detection
             PhysicsEngine engine = new PhysicsEngine ();
-            engine.HitStriker (ref striker, 40, 4.6338492);
+            engine.HitStriker (8, 4.6338492);
+
+            //Task.Run (() => {
+            //    engine.HitStriker (ref striker, 40, 4.6338492);
+            //    } );
             Game.striker.initialHitTime = 0;
             //Use this line for Striker to Edge detection
             //PhysicsEngine.HitStriker (ref striker, 70, 5.41052);

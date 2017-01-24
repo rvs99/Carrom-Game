@@ -15,7 +15,7 @@ namespace Carrom
         //static List<CarromObject> listOfCoins;
         //Striker striker;
         //static List<CarromObject> listOfPockets;
-        static DispatcherTimer timer, changeStrikerValues, changeCoinValues;
+        static DispatcherTimer timer;
         static double strikerForce, strikerAngle;
         static List<Point> allPoints;
 
@@ -36,7 +36,10 @@ namespace Carrom
 
             //Update striker
             Game.striker.Update ();
-            Game.queen.Update ();
+            for (int i = 0; i < 19; i++)
+                {
+                Game.coins[i].Update ();
+                }
             }
 
         //public void AddObject (CarromObject obj)
@@ -69,15 +72,17 @@ namespace Carrom
         //  1. Apply force, direction and CarromObject will stop at perticular point
         //  2. Apply force, direction and CarromObject will collide with other CarromObjects (Coins or Striker or Pocket) or Edge
 
-        public void HitStriker (ref Striker obj, double force, double angle)
+        public void HitStriker (double force, double angle)
             {
             //int x = (int)Math.Round (obj.GetOrigin ().X + GetStoppingDistance (force) * Math.Cos (angle));
             //int y = (int)Math.Round (obj.GetOrigin ().Y + GetStoppingDistance (force) * Math.Sin (angle));
             //allPoints = GetAllPointsBetweenTwoPoints (obj.GetOrigin (), new Point (x, y));
 
+            Game.striker.currentVelocity = force /4;
+            Game.striker.intialVelocity = Game.striker.currentVelocity;
             SetStrikerInput (force, angle);
 
-            changeStrikerValues = new DispatcherTimer ();
+            DispatcherTimer changeStrikerValues = new DispatcherTimer ();
             changeStrikerValues.Interval = TimeSpan.FromMilliseconds (10);
             changeStrikerValues.Tick += (sender, e) => {
                 //Striker displacement code
@@ -88,9 +93,15 @@ namespace Carrom
 
                     if (collisionResult[0] == CollisionResult.None)
                         {
-                        Game.striker.SetOrigin (allPoints.ElementAt (i++));
-                        Game.striker.initialHitTime += 10;
-                        //Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerForce, strikerAngle, Game.striker.initialHitTime));
+                        //Game.striker.SetOrigin (allPoints.ElementAt (i++));
+                        if (Game.striker.currentVelocity <= 0.0F)
+                            {
+                            changeStrikerValues.Stop ();
+                            }
+                        else
+                            {
+                            Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerForce, strikerAngle, Game.striker.initialHitTime));
+                            }
                         }
                     else
                         {
@@ -119,24 +130,6 @@ namespace Carrom
 
             };
             changeStrikerValues.Start ();
-
-            //change
-
-            //foreach (var p in allPoints)
-            //    {
-            //if (!obj.GetOrigin ().Equals (new Point (x, y)))
-            //    {
-            //}
-            //Thread.Sleep (100);
-            //    }
-            //while (obj.GetOrigin ().Equals (new Point (x, y)))
-            //    {
-            //    }
-            //Move to perticular direction
-            //Check if it collides with others
-            //--------If yes, recalculate current objects direction and force
-            //--------and find other collided objects and call HitCarromObject with its direction and force
-            //--------If no, continue
             }
 
         public void HitCoin (ref Coin obj, double force, double angle)
@@ -147,7 +140,7 @@ namespace Carrom
 
             SetCoinInput (force, angle);
 
-            changeCoinValues = new DispatcherTimer ();
+            DispatcherTimer changeCoinValues = new DispatcherTimer ();
             changeCoinValues.Interval = TimeSpan.FromMilliseconds (10);
             changeCoinValues.Tick += (sender, e) =>
             {
@@ -178,8 +171,12 @@ namespace Carrom
                             case CollisionResult.Coin:
                                 changeCoinValues.Stop ();
                                 for (int i = 0; i < collidedCoins.Count; i++)
-                                    ;
                                     {
+                                    //HitCoin (ref collidedCoins[i], 30, 5.41052);
+                                    //Task.Run (() =>
+                                    //{
+                                    //    //HitCoin (ref collidedCoins[i], 30, 5.41052);
+                                    //});
                                     //Call HitCoin () method for each colliede coins
                                     //HitCoin (ref collidedCoins[i], 30, 5.41052);
                                     }
@@ -203,8 +200,8 @@ namespace Carrom
                     }
             };
             changeCoinValues.Start ();
-            //change
 
+            //change
             //foreach (var p in allPoints)
             //    {
             //if (!obj.GetOrigin ().Equals (new Point (x, y)))
@@ -261,7 +258,7 @@ namespace Carrom
         //            //Game.striker.SetOrigin (allPoints.ElementAt (i++));
         //            Game.striker.initialHitTime += 10;
         //            Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerForce, strikerAngle, Game.striker.initialHitTime));
-                    
+
         //            }
         //        else
         //            {
@@ -324,8 +321,8 @@ namespace Carrom
         //                    break;
         //                }
         //            }
-                
-                    
+
+
         //            //}
         //        //else
         //            //{
@@ -344,11 +341,14 @@ namespace Carrom
 
         public static Point GetPointFrom (Point p, double force, double angle, int timeInMillis)
             {
-            timeInMillis = Game.striker.initialHitTime += 10;
+            timeInMillis = Game.striker.initialHitTime += 3;
             Point result = new Point ();
-            double distance = 1 * timeInMillis - (1 / 2 )*((0.25 * 9.8) * (timeInMillis * timeInMillis));
-            result.X = (int)Math.Round (p.X + distance * Math.Cos (angle));
-            result.Y = (int)Math.Round (p.Y + distance * Math.Sin (angle));
+            Game.striker.currentVelocity *= 0.9;
+
+            double distance = (0.5) * (Game.striker.currentVelocity + Game.striker.intialVelocity) * timeInMillis;
+            result.X = Game.striker.GetOrigin().X + (int)Math.Round (distance * Math.Cos (angle));
+            result.Y = Game.striker.GetOrigin().Y + (int)Math.Round (distance * Math.Sin (angle));
+            Game.striker.intialVelocity = Game.striker.currentVelocity;
             return result;
             }
 
@@ -379,7 +379,7 @@ namespace Carrom
                 if (pocketDistance < Game.pockets[0].Radius - 2)
                     {
                     obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Black);
-                    changeCoinValues.Stop ();
+                    //changeCoinValues.Stop ();
                     result.Add(CollisionResult.Pocket);
                     break;
                     }
@@ -407,17 +407,39 @@ namespace Carrom
             if (det == 0)
                 result.Add (CollisionResult.Edge);
 
-            //Check if it is collided with other Coin
-            var dx = obj.GetOrigin().X - Game.queen.GetOrigin().X;
-            var dy = obj.GetOrigin ().Y - Game.queen.GetOrigin ().Y;
-
-            var distance = Math.Sqrt (dx * dx + dy * dy);
-
-            if (distance < obj.Radius + Game.queen.Radius)
+            //Check if it is collided with coins and queen
+            double dx, dy, distance;
+            for (int i = 0; i < 19; i++)
                 {
-                obj.GetBaseElement ().Fill = new SolidColorBrush(Colors.Red);
-                result.Add (CollisionResult.Queen);
+                dx = obj.GetOrigin ().X - Game.coins[i].GetOrigin ().X;
+                dy = obj.GetOrigin ().Y - Game.coins[i].GetOrigin ().Y;
+
+                distance = Math.Sqrt (dx * dx + dy * dy);
+
+                if (distance < obj.Radius + Game.coins[i].Radius)
+                    {
+                    obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Red);
+                    if (Game.coins[i].IsQueen)
+                        {
+                        result.Add (CollisionResult.Queen);
+                        }
+                    else
+                        {
+                        collidedCoins.Add (Game.coins[i]);
+                        result.Add (CollisionResult.Coin);
+                        }
+                    }
                 }
+            //var dx = obj.GetOrigin().X - Game.queen.GetOrigin().X;
+            //var dy = obj.GetOrigin ().Y - Game.queen.GetOrigin ().Y;
+
+            //var distance = Math.Sqrt (dx * dx + dy * dy);
+
+            //if (distance < obj.Radius + Game.queen.Radius)
+            //    {
+            //    obj.GetBaseElement ().Fill = new SolidColorBrush(Colors.Red);
+            //    result.Add (CollisionResult.Queen);
+            //    }
 
             if (result.Count == 0)
                 {

@@ -17,7 +17,7 @@ namespace Carrom
             {
             get; set;
             }
-
+        public double currentVelocity;
         public Border LastHitBorder
             {
             get; set;
