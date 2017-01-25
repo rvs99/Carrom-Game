@@ -18,7 +18,7 @@ namespace Carrom
         static DispatcherTimer timer;
         static double strikerForce, strikerAngle;
         static List<Point> allPoints;
-
+        static Point pointOfIntersection = new Point ();
         public static void Start ()
             {
             //listOfCoins = new List<CarromObject> (19);
@@ -82,7 +82,8 @@ namespace Carrom
             Game.striker.intialVelocity = Game.striker.currentVelocity;
             SetStrikerInput (force, angle);
 
-            DispatcherTimer changeStrikerValues = new DispatcherTimer ();
+
+            changeStrikerValues = new DispatcherTimer ();
             changeStrikerValues.Interval = TimeSpan.FromMilliseconds (10);
             changeStrikerValues.Tick += (sender, e) => {
                 //Striker displacement code
@@ -117,6 +118,10 @@ namespace Carrom
                                     break;
                                 case CollisionResult.Edge:
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                    Point initialStrikerPoint = Game.striker.GetInitialPoint ();
+                                    double angle1 = AngleBetweenTwoLines (initialStrikerPoint, pointOfIntersection, pointOfIntersection, new Point (740, 740));
+                                    i = 0;
+                                    HitStriker (ref Game.striker, 50, angle1 + 1.5708); 
                                     break;
                                 }
                             }
@@ -386,26 +391,40 @@ namespace Carrom
                 }
 
             //Check if is collided with Edge
-            var x1 = 740;
-            var y1 = 0;
-            var x2 = 740;
-            var y2 = 740;
-            Point CarromObjectOrigin = obj.GetOrigin ();
-            var xCircle = CarromObjectOrigin.X;
-            var yCircle = CarromObjectOrigin.Y;
-            var radius = obj.Radius;
-            double dx1, dy1, A, B, C, det, t;
+            Point[] edgePoints = new Point[5];
+            edgePoints[0] = new Point (0, 0);
+            edgePoints[1] = new Point (740,0);
+            edgePoints[2] = new Point (740, 740);
+            edgePoints[3] = new Point (0, 740);
+            edgePoints[4] = new Point (0, 0);
+            for (var i = 0; i < 4; i++)
+                {
+                var edgePointx1 = edgePoints[i].X;
+                var edgePointy1 = edgePoints[i].Y;
+                var edgePointx2 = edgePoints[i+1].X;
+                var edgePointy2 = edgePoints[i+1].Y;
+                Point CarromObjectOrigin = obj.GetOrigin ();
+                var xCircle = CarromObjectOrigin.X;
+                var yCircle = CarromObjectOrigin.Y;
+                var radius = obj.Radius;
+                double dx1, dy1, A, B, C, det, t;
 
-            dx1 = x2 - x1;
-            dy1 = y2 - y1;
+                dx1 = edgePointx2 - edgePointx1;
+                dy1 = edgePointy2 - edgePointy1;
 
-            A = dx1 * dx1 + dy1 * dy1;
-            B = 2 * (dx1 * (x1 - xCircle) + dy1 * (y1 - yCircle));
-            C = (x1 - xCircle) * (x1 - xCircle) + (y1 - yCircle) * (y1 - yCircle) - radius * radius;
+                A = dx1 * dx1 + dy1 * dy1;
+                B = 2 * (dx1 * (edgePointx1 - xCircle) + dy1 * (edgePointy1 - yCircle));
+                C = (edgePointx1 - xCircle) * (edgePointx1 - xCircle) + (edgePointy1 - yCircle) * (edgePointy1 - yCircle) - radius * radius;
 
-            det = B * B - 4 * A * C;
-            if (det == 0)
-                result.Add (CollisionResult.Edge);
+                det = B * B - 4 * A * C;
+                if (det == 0)
+                    {
+                    result.Add (CollisionResult.Edge);
+                    t = -B / (2 * A);
+                    pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
+                    }
+
+                }
 
             //Check if it is collided with coins and queen
             double dx, dy, distance;
@@ -444,6 +463,7 @@ namespace Carrom
             if (result.Count == 0)
                 {
                 result.Add (CollisionResult.None);
+                
                 }
             return result;
             }

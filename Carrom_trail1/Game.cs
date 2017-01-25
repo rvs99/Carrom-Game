@@ -84,6 +84,12 @@ namespace Carrom
             striker.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
             striker.GetBaseElement ().MouseLeftButtonDown += TestMethod ;
 
+            queen = new Coin (14, Colors.BlueViolet);
+            queen.SetInitialPoint (new Point (370, 370));
+            queen.Update ();
+            queen.AddToGame ();
+            queen.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
+
             //Create queen
             coins[18] = new Coin (14, Colors.BlueViolet);
             coins[18].SetInitialPoint (new Point (730, 730));
