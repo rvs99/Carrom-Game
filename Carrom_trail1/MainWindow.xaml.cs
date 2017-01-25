@@ -35,7 +35,7 @@ namespace Carrom
             {
             Game newGame = new Game ();
             newGame.BeginGame ();
-            newGame.Turn ();
+            newGame.FireTurn ();
             newGame.NextTurn ();
 
 

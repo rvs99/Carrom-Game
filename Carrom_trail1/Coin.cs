@@ -18,6 +18,25 @@ namespace Carrom
             get; set;
             }
         public double currentVelocity;
+        public int initialHitTime;
+        public double intialVelocity;
+        private bool pocketed;
+        public bool IsPocketed
+            {
+            get
+                {
+                return pocketed;
+                }
+            set
+                {
+                if (value == true)
+                    {
+                    Game.carromBoard.Children.Remove (this.GetBaseElement ());
+                    pocketed = true;
+                    }
+                }
+            }
+
         public Border LastHitBorder
             {
             get; set;
@@ -59,6 +78,19 @@ namespace Carrom
         public void Move (float force, float angle)
             {
 
+            }
+
+        public void Move (double angle, int timeInMillis)
+            {
+            timeInMillis = initialHitTime += 3;
+            Point result = new Point ();
+
+            double distance = (0.5) * (currentVelocity + intialVelocity) * timeInMillis;
+            result.X = origin_X + (int)Math.Round (distance * Math.Cos (angle));
+            result.Y = origin_Y + (int)Math.Round (distance * Math.Sin (angle));
+            intialVelocity = currentVelocity;
+            currentVelocity *= 0.9;
+            SetOrigin (result);
             }
         }
     }
