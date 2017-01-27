@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Carrom
     {
@@ -19,6 +20,9 @@ namespace Carrom
         public static Player playerTwo;
         public static Coin[] coins;
         public static Striker striker;
+        private bool firstMouseDown = false;
+        private bool secondMouseDown = false;
+        private static int noOfClicks = 0;
 
         //Reset game stage here, all coins must be at initial position
         //striker must be in Player 1's hand
@@ -97,19 +101,84 @@ namespace Carrom
             striker.AddToGame ();
             striker.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
             striker.GetBaseElement ().MouseLeftButtonDown += TestMethod;
+            striker.GetBaseElement ().MouseLeftButtonUp += Striker_MouseLeftButtonUp;
+            striker.GetBaseElement ().MouseMove += Striker_MouseMove;
             #endregion
 
             //Give Striker in Player One's hand
+
+            //register canvas(carromBoard  events)
+            Game.carromBoard.MouseLeftButtonUp += CarromBoard_MouseLeftButtonUp;
+            Game.carromBoard.MouseMove += CarromBoard_MouseMove;
+            }
+
+        private void CarromBoard_MouseMove (object sender, MouseEventArgs e)
+            {
+            if (this.secondMouseDown && noOfClicks == 1)
+                {
+                Point currentMouseCoordinates = e.GetPosition (Game.carromBoard);
+                Point strikerCurrentOrigin = Game.striker.GetOrigin ();
+                Line line = new Line ();
+                line.X1 = currentMouseCoordinates.X;
+                line.Y1 = currentMouseCoordinates.Y;
+                line.X2 = strikerCurrentOrigin.X;
+                line.Y2 = strikerCurrentOrigin.Y;
+                line.Visibility = System.Windows.Visibility.Visible;
+                line.StrokeThickness = 2;
+                line.Stroke = System.Windows.Media.Brushes.Black;
+                Game.carromBoard.Children.Add (line);
+                }
+            
+            }
+
+        private void CarromBoard_MouseLeftButtonUp (object sender, MouseButtonEventArgs e)
+            {
+            }
+
+        private void Striker_MouseMove (object sender, MouseEventArgs e)
+            {
+            if (this.firstMouseDown && noOfClicks == 0)
+                {
+                Point p = e.GetPosition (Game.carromBoard);
+                p.Y = Game.striker.GetOrigin ().Y;
+                Game.striker.SetOrigin (p);
+                }
+            else if(this.secondMouseDown && noOfClicks == 1)
+                {
+                //this.firstMouseDown = false;
+                this.CarromBoard_MouseMove (sender, e);
+                }
+            }
+
+        private void Striker_MouseLeftButtonUp (object sender, MouseButtonEventArgs e)
+            {
+            // if (this.firstMouseDown)
+            //   this.firstMouseDown = false;
+            Game.noOfClicks++;
+            if (this.secondMouseDown)
+                this.secondMouseDown = false;
+
             }
 
         private void TestMethod (object sender, MouseButtonEventArgs e)
             {
             //Use this statement for Striker to Coin detection and Coin to Pocket detection
-            PhysicsEngine engine = new PhysicsEngine ();
-            engine.HitStriker (10, 5.49779);
-            //engine.HitStriker (10, 4.79966);  //275
-            //engine.HitStriker (10, 4.7473); //272
-            //engine.HitStriker (7.5, 4.62512); //265
+            /*PhysicsEngine engine = new PhysicsEngine ();
+            engine.HitStriker (7.5, 4);
+            PhysicsEngine.lastHitStrikerOrigin = Game.striker.GetInitialPoint ();*/
+            if (!this.firstMouseDown && noOfClicks == 0)
+                {
+                this.firstMouseDown = true;
+                this.Striker_MouseMove (sender, e);
+                }
+            else if(!this.secondMouseDown && noOfClicks == 1)
+                {
+                this.secondMouseDown = true;
+                this.firstMouseDown = false;
+                this.Striker_MouseMove (sender, e);
+                }
+            
+
             //Coin c = new Coin (15, Colors.AliceBlue);
             //engine.HitCoin (ref c, 1.5, 4.71239);
             //engine.HitCoin (ref Game.coins[18], 1.5, 4.71239);
