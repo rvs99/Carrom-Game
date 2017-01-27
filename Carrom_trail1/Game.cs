@@ -80,7 +80,7 @@ namespace Carrom
                 }
 
             //Create Queen
-            coins[18] = new Coin (14, Colors.BlueViolet);
+            coins[18] = new Coin (14, Colors.DarkGreen);
             coins[18].SetInitialPoint (new Point (370, 370));
             coins[18].Update ();
             coins[18].AddToGame ();
@@ -106,7 +106,9 @@ namespace Carrom
             {
             //Use this statement for Striker to Coin detection and Coin to Pocket detection
             PhysicsEngine engine = new PhysicsEngine ();
-            engine.HitStriker (7.5, 5.498);
+            //engine.HitStriker (10, 4.79966);  //275
+            //engine.HitStriker (10, 4.7473); //272
+            engine.HitStriker (7.5, 4.62512); //265
             //Coin c = new Coin (15, Colors.AliceBlue);
             //engine.HitCoin (ref c, 1.5, 4.71239);
             //engine.HitCoin (ref Game.coins[18], 1.5, 4.71239);
@@ -114,7 +116,7 @@ namespace Carrom
             //Task.Run (() => {
             //    engine.HitStriker (ref striker, 40, 4.6338492);
             //    } );
-            
+
             //Use this line for Striker to Edge detection
             //PhysicsEngine.HitStriker (ref striker, 70, 5.41052);
             }

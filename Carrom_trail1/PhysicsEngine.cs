@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -90,25 +86,39 @@ namespace Carrom
                                     //Game.coins[18].Move (1.5708 + strikerAngle, 0);
 
                                     //Find angle between line through both origins and bottom line
-                                    HitCoin (ref Game.coins[18], Game.striker.currentVelocity * 0.8 , 3.14159 - AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740)));
+                                    double angleBetweenQueenAndStriker = AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740));
+                                    if (Game.striker.GetOrigin ().X > Game.coins[18].GetOrigin ().X)
+                                        {
+                                        HitCoin (ref Game.coins[18], Game.striker.currentVelocity, 1.5708 + angleBetweenQueenAndStriker);
+                                        HitStriker ((Game.striker.currentVelocity) * 3, (6.28319 + strikerAngle) / 2/*strikerAngle - coinAngle / 2*/);
+                                        }
+                                    else if (Game.striker.GetOrigin ().X < Game.coins[18].GetOrigin ().X)
+                                        {
+                                        HitCoin (ref Game.coins[18], Game.striker.currentVelocity, -1.5708 + angleBetweenQueenAndStriker);
+                                        HitStriker ((Game.striker.currentVelocity) * 3, (3.14159 + strikerAngle) / 2 /*strikerAngle - coinAngle / 2*/);
+                                        }
+                                    //Stop this timer
+                                    changeStrikerValues.Stop ();
                                     break;
 
                                 case CollisionResult.Coin:
                                     foreach (var collidedCoin in collidedCoins)
                                         {
-                                        coinOrigin = collidedCoin.GetOrigin ();
-                                        Game.striker.initialHitTime = 0;
-                                        Game.coins[collidedCoin.CoinNumber - 1].initialHitTime = 0;
-                                        coinAngle = AngleBetweenTwoLines (Game.striker.GetInitialPoint (), Game.striker.GetOrigin (), Game.striker.GetOrigin (), Game.coins[collidedCoin.CoinNumber - 1].GetOrigin ());
-                                        //Move coin to new direction so that collide will not detect again
-                                        //Game.coins[collidedCoin.CoinNumber].SetOrigin (GetPointFrom (Game.coins[collidedCoin.CoinNumber].GetOrigin (), coinAngle, Game.coins[collidedCoin.CoinNumber].initialHitTime));
-
-                                        //Deviate striker also
-                                        //Game.striker.SetOrigin (Game.striker.GetInitialPoint ());
+                                        coinOrigin = Game.coins[collidedCoin.CoinNumber - 1].GetOrigin ();
 
                                         //Find angle between line through both origins and bottom line
-                                        Game.coins[collidedCoin.CoinNumber - 1].currentVelocity = Game.striker.currentVelocity * 0.4;
-                                        HitCoin (ref Game.coins[collidedCoin.CoinNumber - 1], Game.striker.currentVelocity * 0.4, coinAngle);
+                                        double angleBetweenCoinAndStriker = AngleBetweenTwoLines (strikerOrigin, coinOrigin, new Point (0, 740), new Point (740, 740));
+
+                                        if (Game.striker.GetOrigin ().X > Game.coins[collidedCoin.CoinNumber - 1].GetOrigin ().X)
+                                            {
+                                            HitCoin (ref Game.coins[collidedCoin.CoinNumber - 1], Game.striker.currentVelocity * 0.75, 1.5708 + angleBetweenCoinAndStriker);
+                                            HitStriker ((Game.striker.currentVelocity) * 3, (6.28319 + strikerAngle) /2);
+                                            }
+                                        else if (Game.striker.GetOrigin ().X < Game.coins[collidedCoin.CoinNumber - 1].GetOrigin ().X)
+                                            {
+                                            HitCoin (ref Game.coins[collidedCoin.CoinNumber - 1], Game.striker.currentVelocity * 0.75, -1.5708 + angleBetweenCoinAndStriker);
+                                            HitStriker ((Game.striker.currentVelocity) * 3, (3.14159 + strikerAngle) /2);
+                                            }
                                         }
                                     //Stop this timer
                                     changeStrikerValues.Stop ();
@@ -177,8 +187,9 @@ namespace Carrom
                                 for (int i = 0; i < collidedCoins.Count; i++)
                                     {
                                     //recalculate angle and velocity
-                                    Game.coins[collidedCoins[i].CoinNumber -1].GetBaseElement ().Fill = new SolidColorBrush (Colors.Red);
-                                    HitCoin (ref Game.coins[collidedCoins[i].CoinNumber - 1], Game.coins[coinNumber - 1].currentVelocity * 0.8, 4.71239);
+                                    double angleBetweenCoins = AngleBetweenTwoLines (Game.coins[coinNumber - 1].GetOrigin (), Game.coins[collidedCoins[i].CoinNumber - 1].GetOrigin (), new Point (0, 740), new Point (740, 740));
+                                    HitCoin (ref Game.coins[collidedCoins[i].CoinNumber - 1], Game.coins[coinNumber - 1].currentVelocity , angleBetweenCoins);
+                                    HitCoin (ref Game.coins[coinNumber - 1], Game.coins[coinNumber - 1].currentVelocity, (angle + angleBetweenCoins) / 2);
                                     }
                                 break;
                             }
@@ -241,23 +252,23 @@ namespace Carrom
                     {
                     continue;
                     }
-                    dx = obj.GetOrigin ().X - Game.coins[i].GetOrigin ().X;
-                    dy = obj.GetOrigin ().Y - Game.coins[i].GetOrigin ().Y;
+                dx = obj.GetOrigin ().X - Game.coins[i].GetOrigin ().X;
+                dy = obj.GetOrigin ().Y - Game.coins[i].GetOrigin ().Y;
 
-                    distance = Math.Sqrt (dx * dx + dy * dy);
+                distance = Math.Sqrt (dx * dx + dy * dy);
 
-                    if (distance < obj.Radius + Game.coins[i].Radius)
+                if (distance < obj.Radius + Game.coins[i].Radius)
+                    {
+                    //obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Red);
+                    if (Game.coins[i].IsQueen)
                         {
-                        obj.GetBaseElement ().Fill = new SolidColorBrush (Colors.Red);
-                        if (Game.coins[i].IsQueen)
-                            {
-                            result.Add (CollisionResult.Queen);
-                            }
-                        else
-                            {
-                            result.Add (CollisionResult.Coin);
-                            }
-                        collidedCoins.Add (Game.coins[i]);
+                        result.Add (CollisionResult.Queen);
+                        }
+                    else
+                        {
+                        result.Add (CollisionResult.Coin);
+                        }
+                    collidedCoins.Add (Game.coins[i]);
                     }
                 }
             #endregion
