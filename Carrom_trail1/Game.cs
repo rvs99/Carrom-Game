@@ -58,7 +58,7 @@ namespace Carrom
             for (int i = 0; i <= 8; i++)
                 {
                 coins[i] = new Coin (10, Colors.Black);
-                coins[i].SetInitialPoint (new Point (r.Next (5, 730), r.Next (5, 730)));
+                //coins[i].SetInitialPoint (new Point (r.Next (5, 730), r.Next (5, 730)));
                 coins[i].GetBaseElement ().Stroke = new SolidColorBrush (Colors.White);
                 coins[i].AssignPlayer (playerOne);
                 coins[i].CoinNumber = i + 1;
@@ -71,7 +71,7 @@ namespace Carrom
             for (int i = 9; i <= 17; i++)
                 {
                 coins[i] = new Coin (10, Colors.WhiteSmoke);
-                coins[i].SetInitialPoint (new Point (r.Next (730), r.Next (730)));
+                //coins[i].SetInitialPoint (new Point (r.Next (730), r.Next (730)));
                 coins[i].AssignPlayer (playerTwo);
                 coins[i].GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
                 coins[i].CoinNumber = i + 1;
@@ -106,15 +106,16 @@ namespace Carrom
             {
             //Use this statement for Striker to Coin detection and Coin to Pocket detection
             PhysicsEngine engine = new PhysicsEngine ();
+            engine.HitStriker (10, 5.49779);
             //engine.HitStriker (10, 4.79966);  //275
             //engine.HitStriker (10, 4.7473); //272
-            engine.HitStriker (7.5, 4.62512); //265
+            //engine.HitStriker (7.5, 4.62512); //265
             //Coin c = new Coin (15, Colors.AliceBlue);
             //engine.HitCoin (ref c, 1.5, 4.71239);
             //engine.HitCoin (ref Game.coins[18], 1.5, 4.71239);
 
             //Task.Run (() => {
-            //    engine.HitStriker (ref striker, 40, 4.6338492);
+            //    engine.HitStriker (10, 4.79966);
             //    } );
 
             //Use this line for Striker to Edge detection

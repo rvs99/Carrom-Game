@@ -90,12 +90,12 @@ namespace Carrom
                                     if (Game.striker.GetOrigin ().X > Game.coins[18].GetOrigin ().X)
                                         {
                                         HitCoin (ref Game.coins[18], Game.striker.currentVelocity, 1.5708 + angleBetweenQueenAndStriker);
-                                        HitStriker ((Game.striker.currentVelocity) * 3, (6.28319 + strikerAngle) / 2/*strikerAngle - coinAngle / 2*/);
+                                        HitStriker ((Game.striker.currentVelocity) * 3, (6.28319 + strikerAngle) / 2);
                                         }
                                     else if (Game.striker.GetOrigin ().X < Game.coins[18].GetOrigin ().X)
                                         {
                                         HitCoin (ref Game.coins[18], Game.striker.currentVelocity, -1.5708 + angleBetweenQueenAndStriker);
-                                        HitStriker ((Game.striker.currentVelocity) * 3, (3.14159 + strikerAngle) / 2 /*strikerAngle - coinAngle / 2*/);
+                                        HitStriker ((Game.striker.currentVelocity) * 3, (3.14159 + strikerAngle) / 2);
                                         }
                                     //Stop this timer
                                     changeStrikerValues.Stop ();
@@ -124,8 +124,26 @@ namespace Carrom
                                     changeStrikerValues.Stop ();
                                     break;
 
-                                case CollisionResult.Edge:
-
+                                case CollisionResult.RightEdge:
+                                    Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                    double angle1 = AngleBetweenTwoLines (new Point (740, 0), new Point (740, 740), Game.striker.GetInitialPoint(), pointOfIntersection) + 1.5708;
+                                    HitStriker ( 50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, pointOfIntersection, new Point (740, 740)) + 3.14159);
+                                    Game.striker.SetInitialPoint(Game.striker.GetOrigin ());
+                                    break;
+                                case CollisionResult.BottomEdge:
+                                    Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                    HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (740, 740)) + 1.5708);
+                                    Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
+                                    break;
+                                case CollisionResult.TopEdge:
+                                    Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                    HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 0), new Point (740, 0)) - 6.28319);
+                                    Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
+                                    break;
+                                case CollisionResult.LeftEdge:
+                                    Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                    HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (0, 0)) - 1.5708);
+                                    Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
                                     break;
                                 }
                             }
@@ -176,7 +194,7 @@ namespace Carrom
                                 Game.coins[coinNumber - 1].GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
                                 break;
 
-                            case CollisionResult.Edge:
+                            case CollisionResult.RightEdge:
                                 changeCoinValues.Stop ();
                                 Game.coins[coinNumber - 1].GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                                 break;
@@ -206,7 +224,10 @@ namespace Carrom
         public enum CollisionResult
             {
             None,
-            Edge,
+            RightEdge,
+            LeftEdge,
+            BottomEdge,
+            TopEdge,
             Coin,
             Striker,
             Queen,
@@ -239,7 +260,48 @@ namespace Carrom
 
             //Check if is collided with Edge
             #region Collision with Edge
-            
+            Point[] edgePoints = new Point[5];
+            edgePoints[0] = new Point (0, 0);
+            edgePoints[1] = new Point (740, 0);
+            edgePoints[2] = new Point (740, 740);
+            edgePoints[3] = new Point (0, 740);
+            edgePoints[4] = new Point (0, 0);
+            for (var i = 0; i < 4; i++)
+                {
+                var edgePointx1 = edgePoints[i].X;
+                var edgePointy1 = edgePoints[i].Y;
+                var edgePointx2 = edgePoints[i + 1].X;
+                var edgePointy2 = edgePoints[i + 1].Y;
+                Point CarromObjectOrigin = obj.GetOrigin ();
+                var xCircle = CarromObjectOrigin.X;
+                var yCircle = CarromObjectOrigin.Y;
+                var radius = obj.Radius;
+                double dx1, dy1, A, B, C, det, t;
+
+                dx1 = edgePointx2 - edgePointx1;
+                dy1 = edgePointy2 - edgePointy1;
+
+                A = dx1 * dx1 + dy1 * dy1;
+                B = 2 * (dx1 * (edgePointx1 - xCircle) + dy1 * (edgePointy1 - yCircle));
+                C = (edgePointx1 - xCircle) * (edgePointx1 - xCircle) + (edgePointy1 - yCircle) * (edgePointy1 - yCircle) - radius * radius;
+
+                det = B * B - 4 * A * C;
+                if (det >= 0)
+                    {
+                    if (i == 0)
+                        result.Add (CollisionResult.TopEdge);
+                    else if (i == 1)
+                        result.Add (CollisionResult.RightEdge);
+                    else if (i == 2)
+                        result.Add (CollisionResult.BottomEdge);
+                    else
+                        result.Add (CollisionResult.LeftEdge);
+                    t = -B / (2 * A);
+                    pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
+                    }
+
+                }
+
             #endregion
 
             //Check if it is collided with coins and queen
