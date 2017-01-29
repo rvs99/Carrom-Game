@@ -75,11 +75,6 @@ namespace Carrom
         //Two scenarios 
         //  1. Apply force, direction and Coin will stop at perticular point
         //  2. Apply force, direction and Coin will collide with other Coins or Edge or Striker
-        public void Move (float force, float angle)
-            {
-
-            }
-
         public void Move (double angle, int timeInMillis)
             {
             timeInMillis = initialHitTime += 3;

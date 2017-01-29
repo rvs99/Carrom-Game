@@ -20,10 +20,11 @@ namespace Carrom
         public static Player playerTwo;
         public static Coin[] coins;
         public static Striker striker;
-        private bool firstMouseDown = false;
-        private bool secondMouseDown = false;
-        private static int noOfClicks = 0;
+        static Line directionPointer;
+        static int clickNumber = 0;
+        static Point anglePoint;
 
+        #region Methods
         //Reset game stage here, all coins must be at initial position
         //striker must be in Player 1's hand
         public void BeginGame ()
@@ -101,84 +102,29 @@ namespace Carrom
             striker.AddToGame ();
             striker.GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
             striker.GetBaseElement ().MouseLeftButtonDown += TestMethod;
-            striker.GetBaseElement ().MouseLeftButtonUp += Striker_MouseLeftButtonUp;
-            striker.GetBaseElement ().MouseMove += Striker_MouseMove;
             #endregion
 
+            #region Set Player
             //Give Striker in Player One's hand
+            Game.striker.Player = playerOne;
+            #endregion
 
-            //register canvas(carromBoard  events)
-            Game.carromBoard.MouseLeftButtonUp += CarromBoard_MouseLeftButtonUp;
-            Game.carromBoard.MouseMove += CarromBoard_MouseMove;
-            }
+            enableDrag (Game.striker.GetBaseElement ());
+            directionPointer = new Line ();
+            Game.carromBoard.Children.Add (directionPointer);
 
-        private void CarromBoard_MouseMove (object sender, MouseEventArgs e)
-            {
-            if (this.secondMouseDown && noOfClicks == 1)
-                {
-                Point currentMouseCoordinates = e.GetPosition (Game.carromBoard);
-                Point strikerCurrentOrigin = Game.striker.GetOrigin ();
-                Line line = new Line ();
-                line.X1 = currentMouseCoordinates.X;
-                line.Y1 = currentMouseCoordinates.Y;
-                line.X2 = strikerCurrentOrigin.X;
-                line.Y2 = strikerCurrentOrigin.Y;
-                line.Visibility = System.Windows.Visibility.Visible;
-                line.StrokeThickness = 2;
-                line.Stroke = System.Windows.Media.Brushes.Black;
-                Game.carromBoard.Children.Add (line);
-                }
-            
-            }
-
-        private void CarromBoard_MouseLeftButtonUp (object sender, MouseButtonEventArgs e)
-            {
-            }
-
-        private void Striker_MouseMove (object sender, MouseEventArgs e)
-            {
-            if (this.firstMouseDown && noOfClicks == 0)
-                {
-                Point p = e.GetPosition (Game.carromBoard);
-                p.Y = Game.striker.GetOrigin ().Y;
-                Game.striker.SetOrigin (p);
-                }
-            else if(this.secondMouseDown && noOfClicks == 1)
-                {
-                //this.firstMouseDown = false;
-                this.CarromBoard_MouseMove (sender, e);
-                }
-            }
-
-        private void Striker_MouseLeftButtonUp (object sender, MouseButtonEventArgs e)
-            {
-            // if (this.firstMouseDown)
-            //   this.firstMouseDown = false;
-            Game.noOfClicks++;
-            if (this.secondMouseDown)
-                this.secondMouseDown = false;
-
+            anglePoint = new Point ();
             }
 
         private void TestMethod (object sender, MouseButtonEventArgs e)
             {
             //Use this statement for Striker to Coin detection and Coin to Pocket detection
-            /*PhysicsEngine engine = new PhysicsEngine ();
-            engine.HitStriker (7.5, 4);
-            PhysicsEngine.lastHitStrikerOrigin = Game.striker.GetInitialPoint ();*/
-            if (!this.firstMouseDown && noOfClicks == 0)
-                {
-                this.firstMouseDown = true;
-                this.Striker_MouseMove (sender, e);
-                }
-            else if(!this.secondMouseDown && noOfClicks == 1)
-                {
-                this.secondMouseDown = true;
-                this.firstMouseDown = false;
-                this.Striker_MouseMove (sender, e);
-                }
-            
-
+            PhysicsEngine engine = new PhysicsEngine ();
+            //engine.HitStriker (10, 4.45059);
+            //engine.HitStriker (10, 5.49779); //315
+            //engine.HitStriker (10, 4.79966);  //275
+            //engine.HitStriker (10, 4.7473); //272
+            //engine.HitStriker (7.5, 4.62512); //265
             //Coin c = new Coin (15, Colors.AliceBlue);
             //engine.HitCoin (ref c, 1.5, 4.71239);
             //engine.HitCoin (ref Game.coins[18], 1.5, 4.71239);
@@ -205,11 +151,11 @@ namespace Carrom
         public void NextTurn ()
             {
             }
-        
+
         //Game will end here and it shuld return winner Player of the game
         public Player EndGame ()
             {
-            return this.GetWinner();
+            return this.GetWinner ();
             }
 
         // Find max score and return respective Player
@@ -228,5 +174,125 @@ namespace Carrom
                 return null;
                 }
             }
+        #endregion
+
+        #region New Code
+        //Reference : http://mark-dot-net.blogspot.in/2012/11/how-to-drag-shapes-on-canvas-in-wpf.html
+        static Nullable<Point> dragStart = null;
+
+        static MouseButtonEventHandler mouseDown = (sender, args) =>
+        {
+            var element = (UIElement)sender;
+            dragStart = args.GetPosition (element);
+            element.CaptureMouse ();
+            clickNumber = clickNumber == 0 ? 1 : clickNumber;
+
+            if (clickNumber == 2)
+                {
+                directionPointer.X1 = Game.striker.GetOrigin ().X;
+                directionPointer.Y1 = Game.striker.GetOrigin ().Y;
+                directionPointer.X2 = Game.striker.GetOrigin ().X;
+                directionPointer.Y2 = Game.striker.GetOrigin ().Y;
+                directionPointer.Stroke = System.Windows.Media.Brushes.Black;
+                directionPointer.StrokeThickness = 3;
+                }
+        };
+        static MouseEventHandler mouseMove = (sender, args) =>
+        {
+            if (dragStart != null && args.LeftButton == MouseButtonState.Pressed)
+                {
+                switch (clickNumber)
+                    {
+                    //Set Striker position
+                    case 1:
+                        var element = (UIElement)sender;
+                        var p2 = args.GetPosition (Game.carromBoard);
+                        double left = p2.X - dragStart.Value.X;
+                        double top = p2.Y - dragStart.Value.Y;
+                        if (590 > left && left > 123)
+                            {
+                            Game.striker.SetOrigin (new Point (left + 22, 633));
+                            }
+                        break;
+
+                    //Get final point
+                    case 2:
+                        anglePoint = args.GetPosition (Game.striker.GetBaseElement ());
+                        //anglePoint = args.MouseDevice.GetPosition (Game.striker.GetBaseElement ());
+                        //clickNumber = 3;
+                        directionPointer.X2 = anglePoint.X + Game.striker.GetOrigin ().X - striker.Radius;
+                        directionPointer.Y2 = anglePoint.Y + Game.striker.GetOrigin ().Y - striker.Radius;
+                        //Canvas.SetLeft (directionPointer, striker.GetOrigin ().X);
+                        //Canvas.SetTop (directionPointer, striker.GetOrigin ().Y);
+                        break;
+                    }
+                }
+        };
+        static MouseButtonEventHandler mouseUp = (sender, args) =>
+        {
+            var element = (UIElement)sender;
+            dragStart = null;
+            element.ReleaseMouseCapture ();
+             
+            if (clickNumber == 1)
+                {
+                clickNumber = 2;
+                }
+            //Hit striker with calculated angle and force
+            else if (clickNumber == 2)
+                {
+                double strikerAngle = PhysicsEngine.AngleBetweenTwoLines (striker.GetOrigin (), anglePoint, new Point (0, 740), new Point (740, 740));
+                double strkerForce = Math.Sqrt (((anglePoint.X - striker.GetOrigin ().X) * (anglePoint.X - striker.GetOrigin ().X) + (anglePoint.Y - striker.GetOrigin ().Y) * (anglePoint.Y - striker.GetOrigin ().Y)));
+                new PhysicsEngine ().HitStriker (5, strikerAngle + 2.3561944902);
+                clickNumber = 0;
+                carromBoard.Children.Remove (directionPointer);
+                }
+        };
+        Action<UIElement> enableDrag = (element) =>
+        {
+            element.MouseDown += mouseDown;
+            element.MouseMove += mouseMove;
+            element.MouseUp += mouseUp;
+        };
+
+        #endregion
+
+        #region Testing Code
+        //private Point StartPoint, EndPoint;
+
+        //private void panel1_MouseDown (object sender, MouseEventArgs e)
+        //    {
+        //    if (e.RightButton == MouseButtonState.Pressed)
+        //        {
+        //        Point pt = e.GetPosition (Game.striker.GetBaseElement ());
+        //        StartPoint = pt;
+        //        EndPoint = pt;
+        //        ControlPaint.DrawReversibleLine (StartPoint, EndPoint, Color.Black);
+        //        }
+        //    }
+
+        //private void panel1_MouseMove (object sender, MouseEventArgs e)
+        //    {
+        //    if (e.Button == System.Windows.Forms.MouseButtons.Right)
+        //        {
+        //        ControlPaint.DrawReversibleLine (StartPoint, EndPoint, Color.Black); // erase previous line
+        //        EndPoint = Cursor.Position;
+        //        ControlPaint.DrawReversibleLine (StartPoint, EndPoint, Color.Black); // draw new line
+        //        }
+        //    }
+
+        //private void panel1_MouseUp (object sender, MouseEventArgs e)
+        //    {
+        //    if (e.Button == System.Windows.Forms.MouseButtons.Right)
+        //        {
+        //        ControlPaint.DrawReversibleLine (StartPoint, EndPoint, Color.Black); // erase previous line
+
+        //        // ... do something with StartPont and EndPoint in here ...
+
+        //        // possibly add them to a class level structure to use in the Paint() event to make it persistent?
+
+        //        }
+        //    }
+        #endregion
         }
     }

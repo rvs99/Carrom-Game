@@ -125,22 +125,26 @@ namespace Carrom
                                     break;
 
                                 case CollisionResult.RightEdge:
+                                    changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                                     double angle1 = AngleBetweenTwoLines (new Point (740, 0), new Point (740, 740), Game.striker.GetInitialPoint(), pointOfIntersection) + 1.5708;
                                     HitStriker ( 50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, pointOfIntersection, new Point (740, 740)) + 3.14159);
                                     Game.striker.SetInitialPoint(Game.striker.GetOrigin ());
                                     break;
                                 case CollisionResult.BottomEdge:
+                                    changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                                     HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (740, 740)) + 1.5708);
                                     Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
                                     break;
                                 case CollisionResult.TopEdge:
+                                    changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                                     HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 0), new Point (740, 0)) - 6.28319);
                                     Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
                                     break;
                                 case CollisionResult.LeftEdge:
+                                    changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                                     HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (0, 0)) - 1.5708);
                                     Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
@@ -289,17 +293,36 @@ namespace Carrom
                 if (det >= 0)
                     {
                     if (i == 0)
+                        {
                         result.Add (CollisionResult.TopEdge);
+                        t = -B / (2 * A);
+                        pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
+                        break;
+                        }
                     else if (i == 1)
+                        {
                         result.Add (CollisionResult.RightEdge);
-                    else if (i == 2)
-                        result.Add (CollisionResult.BottomEdge);
-                    else
-                        result.Add (CollisionResult.LeftEdge);
-                    t = -B / (2 * A);
-                    pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
-                    }
+                        t = -B / (2 * A);
+                        pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
+                        break;
+                        }
 
+                    else if (i == 2)
+                        {
+                        result.Add (CollisionResult.BottomEdge);
+                        t = -B / (2 * A);
+                        pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
+                        break;
+                        }
+
+                    else
+                        {
+                        result.Add (CollisionResult.LeftEdge);
+                        t = -B / (2 * A);
+                        pointOfIntersection = new Point (edgePointx1 + t * dx1, edgePointy1 + t * dy1);
+                        break;
+                        }
+                    }
                 }
 
             #endregion
