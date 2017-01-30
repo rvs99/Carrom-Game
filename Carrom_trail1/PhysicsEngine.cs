@@ -59,10 +59,11 @@ namespace Carrom
                //     if collisionResult[0] is None
                     if (collisionResult[0] == CollisionResult.None)
                             {
-                            if (Game.striker.currentVelocity <= 0.0F)
+                            if (Game.striker.currentVelocity <= 0.001)
                                 {
                                 changeStrikerValues.Stop ();
-                                }
+                                Game.striker.SetOrigin (new Point (370, 633));
+                            }
                             else
                                 {
                                 //Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerAngle, Game.striker.initialHitTime));
