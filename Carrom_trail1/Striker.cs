@@ -40,6 +40,8 @@ namespace Carrom
         intialVelocity = currentVelocity;
         currentVelocity *= 0.9;
         SetOrigin (result);
-        }
+            if (currentVelocity <= 0.001)
+                Game.striker.SetOrigin (new Point (370, 633));
+            }
         }
     }
