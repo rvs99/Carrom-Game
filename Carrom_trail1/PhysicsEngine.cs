@@ -50,26 +50,29 @@ namespace Carrom
             //Striker displacement code
                 try
                     {
+                    Game.striker.Move (strikerAngle, 0);
+                    Game.striker.Move (strikerAngle, 0);
+                    Game.striker.Move (strikerAngle, 0);
+
                     List<Coin> collidedCoins = new List<Coin> ();
                     List<CollisionResult> collisionResult = isCollided (Game.striker, ref collidedCoins);
-
-                    //if collisionResult[0] is None
+               //     if collisionResult[0] is None
                     if (collisionResult[0] == CollisionResult.None)
-                        {
-                        if (Game.striker.currentVelocity <= 0.0F)
                             {
-                            changeStrikerValues.Stop ();
+                            if (Game.striker.currentVelocity <= 0.0F)
+                                {
+                                changeStrikerValues.Stop ();
+                                }
+                            else
+                                {
+                                //Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerAngle, Game.striker.initialHitTime));
+                                Game.striker.Move (strikerAngle, 0);
+                                }
                             }
-                        else
-                            {
-                            //Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerAngle, Game.striker.initialHitTime));
-                            Game.striker.Move (strikerAngle, 0);
-                            }
-                        }
                     //If collisionResult contains other than None
-                    else
-                        {
-                        Point initialStrikerPoint = Game.striker.GetInitialPoint ();
+                      else
+                    {
+                    Point initialStrikerPoint = Game.striker.GetInitialPoint ();
                         Point strikerOrigin = Game.striker.GetOrigin ();
                         Point coinOrigin;
                         double coinAngle = 0.0F;
@@ -77,6 +80,17 @@ namespace Carrom
                             {
                             switch (collisionObject)
                                 {
+                            //case CollisionResult.None:
+                            //    if (Game.striker.currentVelocity <= 0.0F)
+                            //        {
+                            //        changeStrikerValues.Stop ();
+                            //        }
+                            //    else
+                            //        {
+                            //        //Game.striker.SetOrigin (GetPointFrom (Game.striker.GetOrigin (), strikerAngle, Game.striker.initialHitTime));
+                            //        Game.striker.Move (strikerAngle, 0);
+                            //        }
+                            //    break;
                                 case CollisionResult.Queen:
                                     coinOrigin = Game.coins[18].GetOrigin ();
 
@@ -125,28 +139,27 @@ namespace Carrom
                                     break;
 
                                 case CollisionResult.RightEdge:
-                                    changeStrikerValues.Stop ();
-                                    Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
-                                    double angle1 = AngleBetweenTwoLines (new Point (740, 0), new Point (740, 740), Game.striker.GetInitialPoint(), pointOfIntersection) + 1.5708;
-                                    HitStriker ( 50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, pointOfIntersection, new Point (740, 740)) + 3.14159);
-                                    Game.striker.SetInitialPoint(Game.striker.GetOrigin ());
-                                    break;
+                                changeStrikerValues.Stop ();
+                                Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
+                                HitStriker ((Game.striker.currentVelocity * 10), AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point(740,740), new Point(740,0)) + 3.14159);
+                                Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
+                                break;
                                 case CollisionResult.BottomEdge:
                                     changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
-                                    HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (740, 740)) + 1.5708);
+                                    HitStriker ((Game.striker.currentVelocity * 10), AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (740, 740)) + 1.5708);
                                     Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
                                     break;
                                 case CollisionResult.TopEdge:
                                     changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
-                                    HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 0), new Point (740, 0)) - 6.28319);
+                                    HitStriker ((Game.striker.currentVelocity * 10), AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 0), new Point (740, 0)) - 6.28319);
                                     Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
                                     break;
                                 case CollisionResult.LeftEdge:
                                     changeStrikerValues.Stop ();
                                     Game.striker.GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
-                                    HitStriker (50, AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (0, 0)) - 1.5708);
+                                    HitStriker ((Game.striker.currentVelocity * 10), AngleBetweenTwoLines (Game.striker.GetInitialPoint (), pointOfIntersection, new Point (0, 740), new Point (0, 0)) - 1.5708);
                                     Game.striker.SetInitialPoint (Game.striker.GetOrigin ());
                                     break;
                                 }
@@ -198,7 +211,7 @@ namespace Carrom
                                 Game.coins[coinNumber - 1].GetBaseElement ().Fill = new SolidColorBrush (Colors.White);
                                 break;
 
-                            case CollisionResult.RightEdge:
+                            case CollisionResult.LeftEdge:
                                 changeCoinValues.Stop ();
                                 Game.coins[coinNumber - 1].GetBaseElement ().Fill = new SolidColorBrush (Colors.Blue);
                                 break;

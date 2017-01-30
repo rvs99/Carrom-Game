@@ -248,8 +248,8 @@ namespace Carrom
                 if(directionPointer.Y2 < 613)
                     strikerAngle = -(strikerAngle);
                 double strikerForce = Math.Sqrt (((directionPointer.X2 - striker.GetOrigin ().X) * (directionPointer.X2 - striker.GetOrigin ().X) + (directionPointer.Y2 - striker.GetOrigin ().Y) * (directionPointer.Y2 - striker.GetOrigin ().Y)))/15;
-                if (strikerForce >= 15)
-                    strikerForce = 15;
+                if (strikerForce >= 9)
+                    strikerForce = 9;
                 new PhysicsEngine ().HitStriker (strikerForce, strikerAngle);
                 clickNumber = 0;
                 carromBoard.Children.Remove (directionPointer);
