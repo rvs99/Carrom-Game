@@ -62,7 +62,7 @@ namespace Carrom
             //for player one
             for (int i = 0; i <= 8; i++)
                 {
-                coins[i] = new Coin (10, Colors.Black);
+                coins[i] = new Coin (16, Colors.Black);
                 //coins[i].SetInitialPoint (new Point (r.Next (5, 730), r.Next (5, 730)));
                 coins[i].GetBaseElement ().Stroke = new SolidColorBrush (Colors.White);
                 coins[i].AssignPlayer (playerOne);
@@ -75,7 +75,7 @@ namespace Carrom
             //for player two
             for (int i = 9; i <= 17; i++)
                 {
-                coins[i] = new Coin (10, Colors.WhiteSmoke);
+                coins[i] = new Coin (16, Colors.WhiteSmoke);
                 //coins[i].SetInitialPoint (new Point (r.Next (730), r.Next (730)));
                 coins[i].AssignPlayer (playerTwo);
                 coins[i].GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
@@ -85,18 +85,21 @@ namespace Carrom
                 }
 
             //Create Queen
-            coins[18] = new Coin (14, Colors.DarkGreen);
+            coins[18] = new Coin (16, Colors.DarkGreen);
             coins[18].SetInitialPoint (new Point (370, 370));
             coins[18].Update ();
             coins[18].AddToGame ();
             coins[18].GetBaseElement ().Stroke = new SolidColorBrush (Colors.Black);
             coins[18].IsQueen = true;
             coins[18].CoinNumber = 19;
+
+            coins[0].SetInitialPoint (new Point (370, 403));
+
             #endregion
 
             #region Striker
             //Create Striker
-            striker = new Striker (14, Colors.White);
+            striker = new Striker (20, Colors.White);
             striker.SetInitialPoint (new Point (370, 633));
             striker.Update ();
             striker.AddToGame ();
@@ -245,7 +248,7 @@ namespace Carrom
                 if(directionPointer.Y2 < 613)
                     strikerAngle = -(strikerAngle);
                 double strkerForce = Math.Sqrt (((anglePoint.X - striker.GetOrigin ().X) * (anglePoint.X - striker.GetOrigin ().X) + (anglePoint.Y - striker.GetOrigin ().Y) * (anglePoint.Y - striker.GetOrigin ().Y)));
-                new PhysicsEngine ().HitStriker (10, strikerAngle);
+                new PhysicsEngine ().HitStriker (strkerForce/100, strikerAngle);
                 clickNumber = 0;
                 carromBoard.Children.Remove (directionPointer);
                 }

@@ -90,12 +90,12 @@ namespace Carrom
                                     if (Game.striker.GetOrigin ().X > Game.coins[18].GetOrigin ().X)
                                         {
                                         HitCoin (ref Game.coins[18], Game.striker.currentVelocity, 1.5708 + angleBetweenQueenAndStriker);
-                                        HitStriker ((Game.striker.currentVelocity) * 3, (6.28319 + strikerAngle) / 2);
+                                        HitStriker ((Game.striker.currentVelocity) * 2, (6.28319 + strikerAngle) / 2);
                                         }
                                     else if (Game.striker.GetOrigin ().X < Game.coins[18].GetOrigin ().X)
                                         {
                                         HitCoin (ref Game.coins[18], Game.striker.currentVelocity, -1.5708 + angleBetweenQueenAndStriker);
-                                        HitStriker ((Game.striker.currentVelocity) * 3, (3.14159 + strikerAngle) / 2);
+                                        HitStriker ((Game.striker.currentVelocity) * 2, (3.14159 + strikerAngle) / 2);
                                         }
                                     //Stop this timer
                                     changeStrikerValues.Stop ();
