@@ -247,8 +247,10 @@ namespace Carrom
                 double strikerAngle = PhysicsEngine.AngleBetweenTwoLines (new Point(0,740) , new Point (740, 740), striker.GetOrigin (), new Point(directionPointer.X2, directionPointer.Y2));
                 if(directionPointer.Y2 < 613)
                     strikerAngle = -(strikerAngle);
-                double strkerForce = Math.Sqrt (((anglePoint.X - striker.GetOrigin ().X) * (anglePoint.X - striker.GetOrigin ().X) + (anglePoint.Y - striker.GetOrigin ().Y) * (anglePoint.Y - striker.GetOrigin ().Y)));
-                new PhysicsEngine ().HitStriker (strkerForce/100, strikerAngle);
+                double strikerForce = Math.Sqrt (((directionPointer.X2 - striker.GetOrigin ().X) * (directionPointer.X2 - striker.GetOrigin ().X) + (directionPointer.Y2 - striker.GetOrigin ().Y) * (directionPointer.Y2 - striker.GetOrigin ().Y)))/15;
+                if (strikerForce >= 15)
+                    strikerForce = 15;
+                new PhysicsEngine ().HitStriker (strikerForce, strikerAngle);
                 clickNumber = 0;
                 carromBoard.Children.Remove (directionPointer);
                 }
