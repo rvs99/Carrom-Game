@@ -94,8 +94,34 @@ namespace Carrom
             coins[18].IsQueen = true;
             coins[18].CoinNumber = 19;
 
-            //coins[0].SetInitialPoint (new Point (370, 403));
+            //Inner circle
+            //Put all black coins
+            coins[0].SetInitialPoint (new Point (370, 403));  //bottom middle
+            coins[1].SetInitialPoint (new Point (400, 357));  //right top
+            coins[2].SetInitialPoint (new Point (340, 357));  //left top
 
+            //Put all white coins
+            coins[9].SetInitialPoint (new Point (370, 337)); //top middle
+            coins[10].SetInitialPoint (new Point (400, 390)); //bottom right
+            coins[11].SetInitialPoint (new Point (340, 390)); //bottom left
+
+            //Outer location
+            //White coins
+            
+            coins[13].SetInitialPoint (new Point (430, 340));  //right bottom
+            coins[14].SetInitialPoint (new Point (427, 407));  //left top
+            coins[15].SetInitialPoint (new Point (370, 437));  //bottom middle
+            coins[16].SetInitialPoint (new Point (310, 405)); //bottom left
+            coins[17].SetInitialPoint (new Point (310, 339)); //bottom left
+            coins[12].SetInitialPoint (new Point (370, 300)); //top middle
+
+            //Black coins
+            coins[3].SetInitialPoint (new Point (400, 325));  //bottom middle
+            coins[4].SetInitialPoint (new Point (430, 375));  //left top
+            coins[5].SetInitialPoint (new Point (400, 425));  //bottom middle
+            coins[6].SetInitialPoint (new Point (340, 425));  //bottom middle
+            coins[7].SetInitialPoint (new Point (310, 372)); //bottom left
+            coins[8].SetInitialPoint (new Point (340, 320)); //bottom left
             #endregion
 
             #region Striker
