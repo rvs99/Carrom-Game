@@ -23,6 +23,7 @@ namespace Carrom
         static Line directionPointer;
         static int clickNumber = 0;
         static Point anglePoint;
+        static PhysicsEngine physicsEngine;
 
         #region Methods
         //Reset game stage here, all coins must be at initial position
@@ -31,7 +32,7 @@ namespace Carrom
             {
             //Start PhysicsEngine
             PhysicsEngine.Start ();
-
+            physicsEngine = new PhysicsEngine ();
             #region Players
             playerOne = new Player ("Rahul");
             playerTwo = new Player ("Ajinkya");
@@ -93,7 +94,7 @@ namespace Carrom
             coins[18].IsQueen = true;
             coins[18].CoinNumber = 19;
 
-            coins[0].SetInitialPoint (new Point (370, 403));
+            //coins[0].SetInitialPoint (new Point (370, 403));
 
             #endregion
 
@@ -117,6 +118,7 @@ namespace Carrom
             Game.carromBoard.Children.Add (directionPointer);
 
             anglePoint = new Point ();
+
             }
 
         private void TestMethod (object sender, MouseButtonEventArgs e)
@@ -250,7 +252,7 @@ namespace Carrom
                 double strikerForce = Math.Sqrt (((directionPointer.X2 - striker.GetOrigin ().X) * (directionPointer.X2 - striker.GetOrigin ().X) + (directionPointer.Y2 - striker.GetOrigin ().Y) * (directionPointer.Y2 - striker.GetOrigin ().Y)))/15;
                 if (strikerForce >= 15)
                     strikerForce = 15;
-                new PhysicsEngine ().HitStriker (strikerForce, strikerAngle);
+                physicsEngine.HitStriker (strikerForce, strikerAngle);
                 clickNumber = 0;
                 carromBoard.Children.Remove (directionPointer);
                 }
