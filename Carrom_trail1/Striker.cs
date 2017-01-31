@@ -31,15 +31,17 @@ namespace Carrom
         //  2. Apply force, direction and Striker will collide with Edge or another coins
         public void Move (double angle, int timeInMillis)
         {
-            timeInMillis = initialHitTime += 3;
-            Point result = new Point ();
+        timeInMillis = initialHitTime += 3;
+        Point result = new Point ();
 
-            double distance = (0.5) * (currentVelocity + intialVelocity) * timeInMillis;
-            result.X = origin_X + (int)Math.Round (distance * Math.Cos (angle));
-            result.Y = origin_Y + (int)Math.Round (distance * Math.Sin (angle));
-            intialVelocity = currentVelocity;
-            currentVelocity *= 0.9;
-            SetOrigin (result);
+        double distance = (0.5) * (currentVelocity + intialVelocity) * timeInMillis;
+        result.X = origin_X + (int)Math.Round (distance * Math.Cos (angle));
+        result.Y = origin_Y + (int)Math.Round (distance * Math.Sin (angle));
+        intialVelocity = currentVelocity;
+        currentVelocity *= 0.9;
+        SetOrigin (result);
+            if (currentVelocity <= 0.001)
+                Game.striker.SetOrigin (new Point (370, 633));
+            }
         }
-      }
     }
